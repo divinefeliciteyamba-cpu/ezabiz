@@ -25,6 +25,13 @@
      </style>
 </head>
 <body>
+    <div id="filtres">
+        <button class="btn-filtre" data-cat="tous">Tous</button>
+        <button class="btn-filtre" data-cat="restauration">Restauration</button>
+        <button class="btn-filtre" data-cat="pharmacie">Pharmacie</button>
+        <button class="btn-filtre" data-cat="epicerie">Épicerie</button>
+        <button class="btn-filtre" data-cat="electronique">Électronique</button>
+    </div>
     <div id="carte"></div>
 
      <script>
@@ -32,6 +39,7 @@
 
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(carte);
+      <!-- Création des marqueurs -->
       FAKE_PMES.forEach(function(pme){
         L.marker([pme.lat, pme.lng])
         .bindPopup('<b>'+ pme.nom+ '</b><br>'+ pme.categorie)

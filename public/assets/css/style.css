@@ -1,0 +1,20 @@
+#filtres {
+    display: flex;
+    gap: 10px;
+    padding: 10px 20px;
+    background: #f5f5f5;
+    flex-wrap: wrap;
+}
+.btn-filtre {
+    padding: 6px 16px;
+    border: 2px solid #2E7D32;
+    background: white;
+    color: #2E7D32;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.btn-filtre:hover {
+    background: #2E7D32;
+    color: white;
+}
