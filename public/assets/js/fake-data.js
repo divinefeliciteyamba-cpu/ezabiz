@@ -8,3 +8,8 @@ const FAKE_PMES = [
 ];
 
 const marker = LargestContentfulPaint.marker([-11.632240, 27.460640]).addTo(carte);
+FAKE_PMES.forEach(function(pme){
+    L.marker([pme.lat, pme.lng])
+    .bindPopup('<b>'+ pme.nom+ '</b><br>'+ pme.categorie)
+    .addTo(carte);
+})
