@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user=scalable=no">
     <title>EzaBiz</title>
     <!-- Le fichier CSS de feuille   -->
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -22,6 +22,15 @@
             height: 100vh;
             width: 100%;
         }
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #carte {
+            height: 100%;
+            width: 100vw;
+        }
      </style>
 </head>
 <body>
@@ -33,18 +42,55 @@
         <button class="btn-filtre" data-cat="electronique">Électronique</button>
     </div>
     <div id="carte"></div>
-
-     <script>
+    <script>
       const carte = L.map('carte').setView([-11.632240, 27.460640], 13);
 
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(carte);
-      <!-- Création des marqueurs -->
+      
+      //Création des marqueurs
+      let tousLesMarqueurs = [];
+
       FAKE_PMES.forEach(function(pme){
-        L.marker([pme.lat, pme.lng])
-        .bindPopup('<b>'+ pme.nom+ '</b><br>'+ pme.categorie)
-        .addTo(carte);
-      })
+         const marqueur = L.marker([pme.lat, pme.lng])
+              .bindPopup('<b>'+ pme.nom+ '</b><br>'+ pme.categorie)
+              .addTo(carte);
+         tousLesMarqueurs.push(marqueur);
+      });
+
+      //Filtrage des marqueurs 
+      function filtrerMarqueurs(categorie){ 
+      // Enlever les marqueurs 
+      tousLesMarqueurs.forEach(function(marqueur){
+          carte.removeLayer(marqueur);
+      });
+       //Restituer les marqueurs dans "Tous"
+      if(categorie === "tous"){
+        tousLesMarqueurs.forEach(function(marqueur){
+            marqueur.addTo(carte);
+        });
+        return;
+      };
+      // Garder les pmes de la catégorie concernée
+      const pmesFiltrees = FAKE_PMES.filter(function(pme){
+        return pme.categorie.toLowerCase() === categorie;
+      });
+      // Remettre les marqueurs filtrés
+      pmesFiltrees.forEach(function(pme){
+        const marqueur = L.marker([pme.lat, pme.lng])
+            .bindPopup('<b>'+ pme.nom+ '</b><br>'+ pme.categorie)
+            .addTo(carte);
+        tousLesMarqueurs.push(marqueur);
+      });
+      }
+    
+      document.querySelectorAll('.btn-filtre').forEach(function(bouton){
+         bouton.addEventListener('click', function(){
+         const categorie = bouton.dataset.cat;
+         filtrerMarqueurs(categorie)
+      });
+      });
+
     </script>
 </body>
 </html>
