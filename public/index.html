@@ -8,6 +8,10 @@
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
+    <!-- La librairie Font-Awesome -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <!-- Le fichier CSS du projet -->
+     <link rel="stylesheet" href="assets/css/style.css">
      <!-- Le fichier JavaScript de feuillet   -->
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -48,11 +52,27 @@
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(carte);
       
-      //Création des marqueurs
+      //Création des icônes pour les catégories
+      
+      function getIcone(categorie){
+            const icones = {
+                'Restauration' : '<i class="fa-solid fa-bowl-food"></i>',
+                'Pharmacie': '<i class="fa-solid fa-pills"></i>',
+                'Epicerie' :'<i class="fa-solid fa-basket-shopping"></i>',
+                'Eleectronique':'<i class="fa-solid fa-mobile"></i>'
+            };
+            const icone = icones[categorie] || '<i class="fa-solid fa-store"></i>';
+            return L.divIcon({
+            className: '',
+            html : '<div class="marqueur-' + categorie.toLowerCase() + '">' + icone + ' ' + categorie + '</div>',
+            iconeSize : [130, 30]
+           });
+        };
+        //Création des marqueurs
       let tousLesMarqueurs = [];
 
       FAKE_PMES.forEach(function(pme){
-         const marqueur = L.marker([pme.lat, pme.lng])
+         const marqueur = L.marker([pme.lat, pme.lng], {icon: getIcone(pme.categorie)})
               .bindPopup('<b>'+ pme.nom+ '</b><br>'+ pme.categorie)
               .addTo(carte);
          tousLesMarqueurs.push(marqueur);
@@ -77,20 +97,20 @@
       });
       // Remettre les marqueurs filtrés
       pmesFiltrees.forEach(function(pme){
-        const marqueur = L.marker([pme.lat, pme.lng])
+        const marqueur = L.marker([pme.lat, pme.lng], {icon: getIcone(pme.categorie)})
             .bindPopup('<b>'+ pme.nom+ '</b><br>'+ pme.categorie)
             .addTo(carte);
         tousLesMarqueurs.push(marqueur);
       });
       }
-    
+      // Actionner le filtrage par le click
       document.querySelectorAll('.btn-filtre').forEach(function(bouton){
          bouton.addEventListener('click', function(){
          const categorie = bouton.dataset.cat;
          filtrerMarqueurs(categorie)
       });
       });
-
+       
     </script>
 </body>
 </html>

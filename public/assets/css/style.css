@@ -27,3 +27,34 @@ html, body, #carte {
     height: 100%;
     width: 100vw;
 }
+
+.marqueur-restauration {
+    color: #FF5733;
+    font-weight: bold;
+    font-size: 13px;
+    white-space: nowrap;
+}
+.marqueur-pharmacie{
+    color:#27AE60 ;
+    font-weight: bold;
+    font-size: 13px;
+    white-space: nowrap;
+}
+.marqueur-epicerie{
+    color: #FA8072;
+    font-weight: bold;
+    font-size: 13px;
+    white-space: nowrap;
+}
+.marqueur-electronique {
+    color: #808080;
+    font-weight: bold;
+    font-size: 13px;
+    white-space: nowrap;
+
+.marqueur-autre{
+    color: #333;
+    font-weight: bold;
+    font-size: 13px;
+    white-space: nowrap;
+}
