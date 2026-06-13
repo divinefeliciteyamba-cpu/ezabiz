@@ -54,7 +54,7 @@
       
       //Création des icônes pour les catégories
       
-      function getIcone(categorie){
+      function getIcone(categorie, nom){
             const icones = {
                 'Restauration' : '<i class="fa-solid fa-bowl-food"></i>',
                 'Pharmacie': '<i class="fa-solid fa-pills"></i>',
@@ -64,16 +64,19 @@
             const icone = icones[categorie] || '<i class="fa-solid fa-store"></i>';
             return L.divIcon({
             className: '',
-            html : '<div class="marqueur-' + categorie.toLowerCase() + '">' + icone + ' ' + categorie + '</div>',
-            iconeSize : [130, 30]
+            html : '<div class="marqueur-' + categorie.toLowerCase()+ '">' + icone + ' ' + nom + '</div>',
+            iconSize : [130, 30]
            });
         };
-        //Création des marqueurs
+      //Création des marqueurs
       let tousLesMarqueurs = [];
 
       FAKE_PMES.forEach(function(pme){
-         const marqueur = L.marker([pme.lat, pme.lng], {icon: getIcone(pme.categorie)})
-              .bindPopup('<b>'+ pme.nom+ '</b><br>'+ pme.categorie)
+         const marqueur = L.marker([pme.lat, pme.lng], {icon: getIcone(pme.categorie, pme.nom)})
+              .bindPopup(
+              '<b>'+ pme.nom+ '</b><br>'+ pme.categorie + 
+              '<br><a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>'
+              )
               .addTo(carte);
          tousLesMarqueurs.push(marqueur);
       });
@@ -97,8 +100,11 @@
       });
       // Remettre les marqueurs filtrés
       pmesFiltrees.forEach(function(pme){
-        const marqueur = L.marker([pme.lat, pme.lng], {icon: getIcone(pme.categorie)})
-            .bindPopup('<b>'+ pme.nom+ '</b><br>'+ pme.categorie)
+        const marqueur = L.marker([pme.lat, pme.lng], {icon: getIcone(pme.categorie, pme.nom)})
+            .bindPopup(
+                '<b>'+ pme.nom+ '</b><br>'+ pme.categorie  + 
+                '<br?<a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>'
+            )
             .addTo(carte);
         tousLesMarqueurs.push(marqueur);
       });
