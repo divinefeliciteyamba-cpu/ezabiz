@@ -68,3 +68,13 @@ btn-fiche {
     text-decoration: none;
     font-size: 12px;
 }
+@media (max-width: 768px) {
+    #filtres {
+        padding: 6px 10px;
+        gap: 6px;
+    }
+    .btn-filtre {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+}

@@ -17,6 +17,11 @@
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
       <script src="assets/js/fake-data.js"></script>
+      <!-- Lien Leafleat.markercluster-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+    <script src="https://unpkg.com/leaflet.markercluster@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
      <style>
         *{
             margin: 0;
@@ -30,7 +35,7 @@
             padding: 0;
             margin: 0;
         }
-
+        
         html, body, #carte {
             height: 100%;
             width: 100vw;
@@ -59,7 +64,7 @@
                 'Restauration' : '<i class="fa-solid fa-bowl-food"></i>',
                 'Pharmacie': '<i class="fa-solid fa-pills"></i>',
                 'Epicerie' :'<i class="fa-solid fa-basket-shopping"></i>',
-                'Eleectronique':'<i class="fa-solid fa-mobile"></i>'
+                'Electronique':'<i class="fa-solid fa-mobile"></i>'
             };
             const icone = icones[categorie] || '<i class="fa-solid fa-store"></i>';
             return L.divIcon({
@@ -68,7 +73,8 @@
             iconSize : [130, 30]
            });
         };
-      //Création des marqueurs
+      //Création des marqueurs et Groupe de marqueurs
+      let clustersGroup = L.markerClusterGroup();
       let tousLesMarqueurs = [];
 
       FAKE_PMES.forEach(function(pme){
@@ -76,10 +82,13 @@
               .bindPopup(
               '<b>'+ pme.nom+ '</b><br>'+ pme.categorie + 
               '<br><a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>'
-              )
+              ) // Popup avec le bouton Voir la fiche
               .addTo(carte);
          tousLesMarqueurs.push(marqueur);
+         clustersGroup.addLayer(marqueur);
       });
+
+      carte.addLayer(clustersGroup);
 
       //Filtrage des marqueurs 
       function filtrerMarqueurs(categorie){ 
@@ -103,11 +112,14 @@
         const marqueur = L.marker([pme.lat, pme.lng], {icon: getIcone(pme.categorie, pme.nom)})
             .bindPopup(
                 '<b>'+ pme.nom+ '</b><br>'+ pme.categorie  + 
-                '<br?<a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>'
+                '<br><a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>'
             )
             .addTo(carte);
         tousLesMarqueurs.push(marqueur);
+        clustersGroup.addLayer(marqueur);
       });
+
+      carte.addLayer(clustersGroup);
       }
       // Actionner le filtrage par le click
       document.querySelectorAll('.btn-filtre').forEach(function(bouton){
