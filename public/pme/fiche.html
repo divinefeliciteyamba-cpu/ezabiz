@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche PME</title>
+    <script src="../assets/js/fake-data.js"> </script>
+</head>
+<body>
+    <div id="fiche-container">
+    
+    </div>
+
+    <script>
+        // Lire l'ID depuis l'URL
+        const params = new URLSearchParams(window.location.search);
+        const id = parseInt(params.get('id'));
+
+        //Trouver la PME correspondante
+        const pme = FAKE_PMES.find(function(p){
+            return p.id === id;
+        });
+
+        console.log(pme);
+
+        document.getElementById('fiche-container').innerHTML = `
+             <img src="${pme.photo}" alt="${pme.photo}">
+             <h1>${pme.nom}</h1>
+             <p class="slogan ">${pme.slogan}</p>
+             <p>📍${pme.lat}, ${pme.lng}</p>
+             <p>📞${pme.telephone}</p>
+             <p>🕑${pme.horaires}</p>
+        `;
+    </script>
+</body>
+</html>
