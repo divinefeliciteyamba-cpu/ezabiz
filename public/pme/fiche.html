@@ -7,6 +7,8 @@
     <script src="../assets/js/fake-data.js"> </script>
 </head>
 <body>
+    <div id="compteur-panier">🛒 0</div>
+
     <div id="fiche-container">
     
     </div>
@@ -23,6 +25,16 @@
 
         console.log(pme);
 
+        let htmlProduits = '';
+        pme.produits.forEach(function(produits){
+            htmlProduits += `
+            <div class="carte-produit">
+                <h3>${produits.nom}</h3>
+                <p>${produits.prix} FC</p>
+                <button class="btn-ajouter" data-id="${produits.id}">Ajouter au panier</button>
+            </div>
+        `;
+        });
         document.getElementById('fiche-container').innerHTML = `
              <img src="${pme.photo}" alt="${pme.photo}">
              <h1>${pme.nom}</h1>
@@ -30,7 +42,41 @@
              <p>📍${pme.lat}, ${pme.lng}</p>
              <p>📞${pme.telephone}</p>
              <p>🕑${pme.horaires}</p>
+             <div class="grille-produits">
+                ${htmlProduits}
+             </div>
         `;
+
+        function ajouterAuPanier(produitID){
+            //Récuperer le panier existant 
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+
+            //Trouver le produit dans pme.produits
+            const produit = pme.produits.find(function(p){
+                return p.id === produitID;
+            });
+
+            //Ajout du produit au panier
+            panier.push(produit);
+
+            //Sauvegarder le panier mis à jour
+            localStorage.setItem('panier', JSON.stringify(panier));
+
+            console.log('Panier mis à jour:', panier); 
+        }
+
+        document.querySelectorAll('.btn-ajouter').forEach(function(bouton){
+            bouton.addEventListener('click', function(){
+                const produitId = parseInt(bouton.dataset.id);
+                ajouterAuPanier(produitId);
+            });
+        }); 
+        function mettreAJourCompteur(){
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            document.getElementById('compteur-panier').innerText = '🛒' + panier.length;
+        }
+
+        mettreAJourCompteur();
     </script>
 </body>
 </html>
