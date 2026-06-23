@@ -39,7 +39,7 @@
              <img src="${pme.photo}" alt="${pme.photo}">
              <h1>${pme.nom}</h1>
              <p class="slogan ">${pme.slogan}</p>
-             <p>📍${pme.lat}, ${pme.lng}</p>
+             <p>📍${pme.adresse}</p>
              <p>📞${pme.telephone}</p>
              <p>🕑${pme.horaires}</p>
              <div class="grille-produits">
@@ -61,6 +61,7 @@
 
             //Sauvegarder le panier mis à jour
             localStorage.setItem('panier', JSON.stringify(panier));
+            mettreAJourCompteur();
 
             console.log('Panier mis à jour:', panier); 
         }

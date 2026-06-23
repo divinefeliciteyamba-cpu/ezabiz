@@ -19,8 +19,7 @@
       <script src="assets/js/fake-data.js"></script>
       <!-- Lien Leafleat.markercluster-->
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
-    <script src="https://unpkg.com/leaflet.markercluster@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"> 
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
      <style>
         *{
@@ -30,6 +29,7 @@
         #carte {
             height: 100vh;
             width: 100%;
+            filter: brightness(0.85) contrast(0.9) saturate(0.9);
         }
         body {
             padding: 0;
@@ -54,25 +54,44 @@
     <script>
       const carte = L.map('carte').setView([-11.632240, 27.460640], 13);
 
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(carte);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {maxZoom: 19, attribution: '© CartoDB'}).addTo(carte);
       
       //Création des icônes pour les catégories
       
-      function getIcone(categorie, nom){
-            const icones = {
-                'Restauration' : '<i class="fa-solid fa-bowl-food"></i>',
-                'Pharmacie': '<i class="fa-solid fa-pills"></i>',
-                'Epicerie' :'<i class="fa-solid fa-basket-shopping"></i>',
-                'Electronique':'<i class="fa-solid fa-mobile"></i>'
+      const ICONES_CAT = {
+                'Restauration' : {fa : 'fa-utensils', classe: 'marqueur-restauration'},
+                'Pharmacie': {fa : 'fa-pills ', classe: 'marqueur-pharmacie'},
+                'Epicerie' :{fa : 'fa-basket-shopping', classe: 'marqueur-epicerie'},
+                'Electronique':{fa : 'fa-mobile', classe: 'marqueur-electronique'},
             };
-            const icone = icones[categorie] || '<i class="fa-solid fa-store"></i>';
-            return L.divIcon({
+      function getIcone(categorie, nom) {
+        const config = ICONES_CAT[categorie] || {fa : 'fa-store', classe: 'marqueur-autre'};
+        const html =
+            '<div class="marqueur ' + config.classe + '">' +
+                '<div class="marqueur-icone">' + 
+                    '<i class="fa-solid ' + config.fa + '"></i>' +
+                    '</div>' +
+                    '<span class="marqueur-nom">' + nom + '</span>' +
+                '</div>';
+        return L.divIcon({
             className: '',
-            html : '<div class="marqueur-' + categorie.toLowerCase()+ '">' + icone + ' ' + nom + '</div>',
-            iconSize : [130, 30]
-           });
-        };
+            html: html,
+            iconSize: [160, 32],
+            iconAnchor: [16, 16], // ancré sur le rond, pas le texte
+            popupAnchor: [80, -16]
+        });
+      }
+       // Actionner le filtrage avec highlight du bouton actif
+      document.querySelectorAll('.btn-filtre').forEach(function(bouton) {
+         bouton.addEventListener('click', function() {
+            document.querySelectorAll('.btn-filtre').forEach(function(b) {
+                b.classList.remove('actif');
+            });
+            bouton.classList.add('actif');
+            filtrerMarqueurs(bouton.dataset.cat);
+        });
+      });
+
       //Création des marqueurs et Groupe de marqueurs
       let clustersGroup = L.markerClusterGroup();
       let tousLesMarqueurs = [];
@@ -121,14 +140,8 @@
 
       carte.addLayer(clustersGroup);
       }
-      // Actionner le filtrage par le click
-      document.querySelectorAll('.btn-filtre').forEach(function(bouton){
-         bouton.addEventListener('click', function(){
-         const categorie = bouton.dataset.cat;
-         filtrerMarqueurs(categorie)
-      });
-      });
-       
+
+      
     </script>
 </body>
 </html>
