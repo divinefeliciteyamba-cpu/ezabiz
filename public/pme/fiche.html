@@ -19,59 +19,65 @@
         const id = parseInt(params.get('id'));
 
         //Trouver la PME correspondante
-        const pme = FAKE_PMES.find(function(p){
-            return p.id === id;
-        });
+        fetch('http://localhost:3000/api/pme' + id)
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(pme){
+                let htmlProduits = '';
+                pme.produits.forEach(function(produits){
+                    htmlProduits += `
+                    <div class="carte-produit">
+                    <h3>${produits.nom}</h3>
+                    <p>${produits.prix} FC</p>
+                    <button class="btn-ajouter" data-id="${produits.id}">Ajouter au panier</button>
+                    </div>
+                `;
+                });
+                document.getElementById('fiche-container').innerHTML = `
+                    <img src="${pme.photo}" alt="${pme.photo}">
+                    <h1>${pme.nom}</h1>
+                    <p class="slogan ">${pme.slogan}</p>
+                    <p>📍${pme.adresse}</p>
+                    <p>📞${pme.telephone}</p>
+                    <p>🕑${pme.horaires}</p>
+                    <div class="grille-produits">
+                       ${htmlProduits}
+                    </div>
+                `;
+                console.log(pme);
 
-        console.log(pme);
+                 function ajouterAuPanier(produitID){
+                 //Récuperer le panier existant 
+                 let panier = JSON.parse(localStorage.getItem('panier')) || [];
 
-        let htmlProduits = '';
-        pme.produits.forEach(function(produits){
-            htmlProduits += `
-            <div class="carte-produit">
-                <h3>${produits.nom}</h3>
-                <p>${produits.prix} FC</p>
-                <button class="btn-ajouter" data-id="${produits.id}">Ajouter au panier</button>
-            </div>
-        `;
-        });
-        document.getElementById('fiche-container').innerHTML = `
-             <img src="${pme.photo}" alt="${pme.photo}">
-             <h1>${pme.nom}</h1>
-             <p class="slogan ">${pme.slogan}</p>
-             <p>📍${pme.adresse}</p>
-             <p>📞${pme.telephone}</p>
-             <p>🕑${pme.horaires}</p>
-             <div class="grille-produits">
-                ${htmlProduits}
-             </div>
-        `;
+                //Trouver le produit dans pme.produits
+                const produit = pme.produits.find(function(p){
+                    return p.id === produitID;
+                });
 
-        function ajouterAuPanier(produitID){
-            //Récuperer le panier existant 
-            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+                //Ajout du produit au panier
+                panier.push(produit);
 
-            //Trouver le produit dans pme.produits
-            const produit = pme.produits.find(function(p){
-                return p.id === produitID;
+                 //Sauvegarder le panier mis à jour
+                 localStorage.setItem('panier', JSON.stringify(panier));
+                 mettreAJourCompteur();
+
+                 console.log('Panier mis à jour:', panier); 
+                }
+
+                document.querySelectorAll('.btn-ajouter').forEach(function(bouton){
+                   bouton.addEventListener('click', function(){
+                      const produitId = parseInt(bouton.dataset.id);
+                      ajouterAuPanier(produitId);
+                   });
+                }); 
+            })
+            .catch(function(erreur){
+                console.error('Erreur:', erreur);
             });
 
-            //Ajout du produit au panier
-            panier.push(produit);
 
-            //Sauvegarder le panier mis à jour
-            localStorage.setItem('panier', JSON.stringify(panier));
-            mettreAJourCompteur();
-
-            console.log('Panier mis à jour:', panier); 
-        }
-
-        document.querySelectorAll('.btn-ajouter').forEach(function(bouton){
-            bouton.addEventListener('click', function(){
-                const produitId = parseInt(bouton.dataset.id);
-                ajouterAuPanier(produitId);
-            });
-        }); 
         function mettreAJourCompteur(){
             let panier = JSON.parse(localStorage.getItem('panier')) || [];
             document.getElementById('compteur-panier').innerText = '🛒' + panier.length;

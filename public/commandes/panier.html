@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panier</title>
+</head>
+<body>
+    <script>
+        //Remplissage du panier et addition d'articles
+        let htmlPanier = '';
+        let total = 0;
+        
+        //Lecture et Affichage de la liste des articles
+        panier.forEach(function(produit){
+            htmlPanier += `
+            <div class="ligne-panier">
+                <span>${produit.nom}</span>
+                <span>${produit.prix} FC</span>
+            </div>
+            `;
+            total += produit.prix;
+        });
+
+        document.getElementById('panier-container').innerHTML = htmlPanier + `
+        <div class="total-panier">
+             <strong>Total : ${total} FC</strong>
+        </div>
+        `;
+    </script>
+</body>
+</html>
