@@ -4,9 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panier</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
+    <div id="compteur-panier"></div>
+    <div id="panier-container"></div>
+
+    <form id="formulaire-commande" class="formulaire-adresse">
+        <h2>Adresse de Livraison</h2>
+
+        <label for="nom-client">Nom complet</label>
+        <input type="text" id="nom-client" required>
+
+        <label for="telephone-client">Téléphone</label>
+        <input type="tel" id="telephone-client" required>
+
+        <label for="adresse-client">Adresse</label>
+        <textarea id="adresse-client" rows="3" required></textarea>
+
+        <button type="submit" class="btn-commander">Passer la commande</button>
+    </form>
     <script>
+        let panier = JSON.parse(localStorage.getItem('panier')) || [];
+
         //Remplissage du panier et addition d'articles
         let htmlPanier = '';
         let total = 0;
@@ -27,6 +47,57 @@
              <strong>Total : ${total} FC</strong>
         </div>
         `;
+        function mettreAJouerCompteur(){
+            document.getElementById('compteur-panier').innerText = '🛒' + panier.length;
+        }
+        mettreAJouerCompteur();
+        
+        function passerCommande(){
+             //Récuperer le token JWT de l'utilisateur connecté
+             const token = localStorage.getItem('tokenn');
+
+             //Vérifier que l'utilisateur est connecté
+             if(!token){
+                window.location.href= '../auth/login.html';
+                return;
+             }
+
+             const nom = document.getElementById('nom-client').value;
+             const telephone = document.getElementById('telephone-client').value;
+             const adresse = document.getElementById('adresse-client').value;
+
+             //Envoie une demande au serveur
+             fetch('https://ezabiz-production.up.railway.app/api/commandes',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token                
+                },
+                body: JSON.stringify({
+                    articles: panier,
+                    nom: nom,
+                    telephone: telephone,
+                    adresse: adresse
+                })
+             })
+             .then(function(response){
+                return response.json();
+             })
+             .then(function(resultat){
+                localStorage.removeItem('panier');
+                alert('Commande passée avec succès !');
+                window.location.href = '../pme/index.html';
+             })
+             .catch(function(erreur){
+                console.error('Erreur lors de la commande:', erreur);
+             });
+        }
+
+        //Appel de la fonction quand le formulaire est soumis
+        document.getElementById('formulaire-commande').addEventListener('submit', function(e){
+            e.preventDefault(); //La page se recharge automatiquement après soumission du formulaire
+            passerCommande();
+        });
     </script>
 </body>
 </html>

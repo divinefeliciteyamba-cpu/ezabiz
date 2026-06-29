@@ -28,6 +28,7 @@
 body {
     padding: 0;
     margin: 0;
+    background: #0f1117;
 }
 
 html, body, #carte {
@@ -93,4 +94,93 @@ html, body, #carte {
         padding: 4px 10px;
         font-size: 12px;
     }
+}
+
+#compteur-panier {
+    display: inline-block;
+    background: #1a1d2e;
+    color: #a78bfa;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin: 16px;
+    border: 1px solid #2d2f45;
+}
+
+#panier-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.ligne-panier {
+    display: flex;
+    justify-content: space-between;
+    background: linear-gradient(145deg, #1a1d2e, #15172420);
+    border: 1px solid #2d2f45;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    color: #e4e4f0;
+    box-shadow: 0 4px 14px rgba(255, 255, 255, 0.4);
+}
+
+.total-panier {
+    display: flex;
+    justify-content: space-between;
+    background: linear-gradient(145deg, #312e81, #1e1b4b);
+    border: 1px solid #4c46b3;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-top: 18px;
+    font-weight: bold;
+    color: #c4b5fd;
+    box-shadow: 0 4px 18px rgba(76, 70, 179, 0.35);
+}
+
+.formulaire-adresse {
+    max-width: 500px;
+    margin: 28px auto 0;
+    padding: 0 20px;
+}
+
+.formulaire-adresse h2 {
+    color: #e4e4f0;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.formulaire-adresse label {
+    display: block;
+    margin-top: 12px;
+    font-size: 14px;
+    color: #9595b3;
+}
+
+.formulaire-adresse input,
+.formulaire-adresse textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 4px;
+    border-radius: 8px;
+    border: 1px solid #2d2f45;
+    background: #15172a;
+    color: #e4e4f0;
+}
+
+.btn-commander {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 18px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+}
+.btn-commander:hover {
+    background: linear-gradient(135deg, #5558e0, #7c4fe0);
 }

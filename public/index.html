@@ -96,7 +96,7 @@
       let tousLesMarqueurs = [];
       let toutesLesPmes = [];
       
-      fetch('http://localhost:3000/api/pme') //Envoie une demande au serveur
+      fetch('https://ezabiz-production.up.railway.app/api/pme') //Envoie une demande au serveur
           .then(function(response){
               return response.json();
           })
@@ -106,9 +106,10 @@
               response.forEach(function(pme){
                   const marqueur = L.marker([pme.latitude, pme.longitude], {icon: getIcone(pme.categorie, pme.nom)})
                       .bindPopup(
-                          '<b>'+ pme.nom +'</b><b>'+ pme.categorie +
+                          '<b>'+ pme.nom +'</b><br>'+ pme.categorie +
                           '<br><a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>'
                     );
+                    marqueur.categorie = pme.categorie;
                 tousLesMarqueurs.push(marqueur);
                 clustersGroup.addLayer(marqueur);
             });
@@ -120,37 +121,30 @@
 
       //Filtrage des marqueurs 
       function filtrerMarqueurs(categorie){ 
-      // Enlever les marqueurs 
+      // Enlever les marqueurs actuellement affichés
       tousLesMarqueurs.forEach(function(marqueur){
           carte.removeLayer(marqueur);
+          clustersGroup.removeLayer(marqueur);
       });
        //Restituer les marqueurs dans "Tous"
       if(categorie === "tous"){
         tousLesMarqueurs.forEach(function(marqueur){
-            marqueur.addTo(carte);
+            clustersGroup.addLayer(marqueur);
         });
+        carte.addLayer(clustersGroup);
         return;
-      };
-      // Garder les pmes de la catégorie concernée
-      const pmesFiltrees = toutesLesPmes.filter(function(pme){
-        return pme.categorie.toLowerCase() === categorie;
-      });
-      // Remettre les marqueurs filtrés
-      pmesFiltrees.forEach(function(pme){
-        const marqueur = L.marker([pme.lat, pme.lng], {icon: getIcone(pme.categorie, pme.nom)})
-            .bindPopup(
-                '<b>'+ pme.nom+ '</b><br>'+ pme.categorie  + 
-                '<br><a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>'
-            )
-            .addTo(carte);
-        tousLesMarqueurs.push(marqueur);
-        clustersGroup.addLayer(marqueur);
+      }
+      // On filtre les marqueurs déjà créés, grâce à leur propriété .categorie
+      const marqueursFiltres = tousLesMarqueurs.filter(function(marqueur){
+        return marqueur.categorie.toLowerCase() === categorie;
       });
 
+      marqueursFiltres.forEach(function(marqueur){
+        clustersGroup.addLayer(marqueur);
+      })
       carte.addLayer(clustersGroup);
       }
-
-      
+       
     </script>
 </body>
 </html>
