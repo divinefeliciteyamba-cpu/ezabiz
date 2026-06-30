@@ -45,9 +45,10 @@
     <div id="filtres">
         <button class="btn-filtre" data-cat="tous">Tous</button>
         <button class="btn-filtre" data-cat="restauration">Restauration</button>
-        <button class="btn-filtre" data-cat="pharmacie">Pharmacie</button>
-        <button class="btn-filtre" data-cat="epicerie">Épicerie</button>
-        <button class="btn-filtre" data-cat="electronique">Électronique</button>
+        <button class="btn-filtre" data-cat="couture">Couture</button>
+        <button class="btn-filtre" data-cat="coiffure">Coiffure</button>
+        <button class="btn-filtre" data-cat="quincaillerie">Quincaillerie</button>
+        <button class="btn-filtre" data-cat="transport">Transport</button>
     </div>
     <div id="carte"></div>
     <script>
@@ -58,10 +59,11 @@
       //Création des icônes pour les catégories
       
       const ICONES_CAT = {
-                'Restauration' : {fa : 'fa-utensils', classe: 'marqueur-restauration'},
-                'Pharmacie': {fa : 'fa-pills ', classe: 'marqueur-pharmacie'},
-                'Epicerie' :{fa : 'fa-basket-shopping', classe: 'marqueur-epicerie'},
-                'Electronique':{fa : 'fa-mobile', classe: 'marqueur-electronique'},
+                'restauration' : {fa : 'fa-utensils', classe: 'marqueur-restauration'},
+                'couture': {fa : 'fa-scissors', classe: 'marqueur-couture'},
+                'coiffure' :{fa : 'fa-cut', classe: 'marqueur-coiffure'},
+                'quincaillerie':{fa : 'fa-hammer', classe: 'marqueur-quincaillerie'},
+                'transport':{fa : 'fa-bus', classe: 'marqueur-transport'},
             };
       function getIcone(categorie, nom) {
         const config = ICONES_CAT[categorie] || {fa : 'fa-store', classe: 'marqueur-autre'};

@@ -26,6 +26,7 @@
     </form>
     <script>
         let panier = JSON.parse(localStorage.getItem('panier')) || [];
+        let pmeId = localStorage.getItem('pme_id');
 
         //Remplissage du panier et addition d'articles
         let htmlPanier = '';
@@ -54,7 +55,7 @@
         
         function passerCommande(){
              //Récuperer le token JWT de l'utilisateur connecté
-             const token = localStorage.getItem('tokenn');
+             const token = localStorage.getItem('token');
 
              //Vérifier que l'utilisateur est connecté
              if(!token){
@@ -67,16 +68,17 @@
              const adresse = document.getElementById('adresse-client').value;
 
              //Envoie une demande au serveur
-             fetch('https://ezabiz-production.up.railway.app/api/commandes',{
+             fetch('https://ezabiz-production.up.railway.app/api/commandes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + token                
                 },
                 body: JSON.stringify({
+                    pme_id: pmeId,
                     articles: panier,
-                    nom: nom,
-                    telephone: telephone,
+                    client_nom: nom,
+                    client_telephone: telephone,
                     adresse: adresse
                 })
              })

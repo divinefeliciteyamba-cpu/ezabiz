@@ -4,22 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fiche PME</title>
-    <script src="../assets/js/fake-data.js"> </script>
 </head>
 <body>
     <div id="compteur-panier">🛒 0</div>
-
-    <div id="fiche-container">
-    
-    </div>
-
+    <div id="fiche-container"></div>
     <script>
         // Lire l'ID depuis l'URL
         const params = new URLSearchParams(window.location.search);
         const id = parseInt(params.get('id'));
 
         //Trouver la PME correspondante
-        fetch('https://ezabiz-production.up.railway/api/pme' + id)
+        fetch('https://ezabiz-production.up.railway.app/api/pme/' + id)
             .then(function(response){
                 return response.json();
             })
@@ -35,9 +30,9 @@
                 `;
                 });
                 document.getElementById('fiche-container').innerHTML = `
-                    <img src="${pme.photo}" alt="${pme.photo}">
+                    ${pme.photo ? `<img src="${pme.photo}" alt="${pme.nom}">
                     <h1>${pme.nom}</h1>
-                    <p class="slogan ">${pme.slogan}</p>
+                    <p class="slogan ">${pme.description || ''}</p>
                     <p>📍${pme.adresse}</p>
                     <p>📞${pme.telephone}</p>
                     <p>🕑${pme.horaires}</p>
@@ -61,6 +56,7 @@
 
                  //Sauvegarder le panier mis à jour
                  localStorage.setItem('panier', JSON.stringify(panier));
+                 localStorage.setItem('pme_id', pme.id);
                  mettreAJourCompteur();
 
                  console.log('Panier mis à jour:', panier); 
