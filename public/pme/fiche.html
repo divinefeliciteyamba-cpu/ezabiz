@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fiche PME</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
     <div id="compteur-panier">🛒 0</div>
@@ -30,12 +31,12 @@
                 `;
                 });
                 document.getElementById('fiche-container').innerHTML = `
-                    ${pme.photo ? `<img src="${pme.photo}" alt="${pme.nom}">
+                    ${pme.photo ? `<img src="${pme.photo}" alt="${pme.nom}">` : ''}
                     <h1>${pme.nom}</h1>
                     <p class="slogan ">${pme.description || ''}</p>
-                    <p>📍${pme.adresse}</p>
-                    <p>📞${pme.telephone}</p>
-                    <p>🕑${pme.horaires}</p>
+                    <p>📍 ${pme.adresse}</p>
+                    <p>📞 ${pme.telephone}</p>
+                    <p>🕑 ${pme.horaires}</p>
                     <div class="grille-produits">
                        ${htmlProduits}
                     </div>

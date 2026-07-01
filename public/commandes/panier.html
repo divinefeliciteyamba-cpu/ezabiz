@@ -51,7 +51,7 @@
         function mettreAJouerCompteur(){
             document.getElementById('compteur-panier').innerText = '🛒' + panier.length;
         }
-        mettreAJouerCompteur();
+        mettreAJourCompteur();
         
         function passerCommande(){
              //Récuperer le token JWT de l'utilisateur connecté
@@ -59,6 +59,7 @@
 
              //Vérifier que l'utilisateur est connecté
              if(!token){
+                localStorage.setItem('retour_apres_login', window.location.href);
                 window.location.href= '../auth/login.html';
                 return;
              }
