@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi de commande - EzaBiz</title>
+    <!-- Bibliothèque jsPDF : génération de fichiers PDF dans le navigateur -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Bibliothèque Socket.io : communication en temps réel avec le serveur -->
+    <script src="https://cdn.socket.io/4.8.3/socket.io.min.js" crossorigin="anonymous"></script>
     <style>
         body {
             margin: 0;
@@ -274,6 +277,29 @@
         }
 
         afficherCommande(commande);
+
+        // Connexion au serveur Socket.io
+        const socket = io('https://ezabiz-production.up.railway.app');
+
+        // Ecouter les changements de statut
+        socket.on('order_status', function(data) {
+            console.log('Nouveau statut reçu :', data);
+
+            // Vérifier que c'est bien notre commande
+            if(data.commande_id === commande.id) {
+                mettreAJourStatut(data.statut);
+            }
+        });
+
+        // Confirmer la connexion
+        socket.on('connect', function() {
+            console.log('Connecté au serveur en temps réel !');
+        });
+
+        // Gérer les erreurs
+        socket.on('connect_error', function(erreur) {
+            console.error('Erreur Socket.io :', erreur);
+        });
     </script>
 </body>
 </html>
