@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi de commande - EzaBiz</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -156,7 +157,7 @@
             color: #e4e4f0;
         }
 
-        .articles-ligne:last-child { border-bottom: none; }
+        .article-ligne:last-child { border-bottom: none; }
 
         .total-suivi {
             display: flex;
@@ -167,6 +168,19 @@
             font-size: 15px;
             padding-top: 12px;
             border-top: 1px solid #2d2f45;
+        }
+        #btn-facture {
+            width: 100%;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px rgba(99, 102, 241, 0.4);
         }
     </style>
 </head>
@@ -208,6 +222,10 @@
                 <span id="total-commande">---</span>
             </div>
         </div>
+
+        <button id="btn-facture" onclick="genererFacture()">
+            📄 Télécharger ma facture
+        </button>
     </main>
 
     <script>
