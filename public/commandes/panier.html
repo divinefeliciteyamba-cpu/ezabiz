@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panier</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
     <div id="compteur-panier"></div>
@@ -48,7 +48,7 @@
              <strong>Total : ${total} FC</strong>
         </div>
         `;
-        function mettreAJouerCompteur(){
+        function mettreAJourCompteur(){
             document.getElementById('compteur-panier').innerText = '🛒' + panier.length;
         }
         mettreAJourCompteur();
@@ -80,7 +80,7 @@
                     articles: panier,
                     client_nom: nom,
                     client_telephone: telephone,
-                    adresse: adresse
+                    adresse_livraison: adresse
                 })
              })
              .then(function(response){

@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fiche PME</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
-    <div id="compteur-panier">🛒 0</div>
-    <div id="fiche-container"></div>
+    <a class="fiche-compteur" href="../commandes/panier.html">
+        <span id="compteur-panier">0</span>
+    </a>
+    <div id="fiche-container" class="fiche-page"></div>
     <script>
         // Lire l'ID depuis l'URL
         const params = new URLSearchParams(window.location.search);
@@ -21,46 +23,48 @@
             })
             .then(function(pme){
                 let htmlProduits = '';
-                pme.produits.forEach(function(produits){
-                    htmlProduits += `
-                    <div class="carte-produit">
-                    <h3>${produits.nom}</h3>
-                    <p>${produits.prix} FC</p>
-                    <button class="btn-ajouter" data-id="${produits.id}">Ajouter au panier</button>
-                    </div>
-                `;
-                });
+                const listeProduits = pme.produits || [];
+
+                if(listeProduits.length === 0) {
+                    htmlProduits = '<p style="color:#9595b3; padding:16px;">Aucun produit disponible pour le moment.</p>';
+                } else {
+                    listeProduits.forEach(function(produit) {
+                        htmlProduits += `
+                            <div class="carte-produit">
+                                <h3>${produit.nom}</h3>
+                                <p>${produit.prix} FC</p>
+                                <button class="btn-ajouter" data-id="${produit.id}">Ajouter au panier</button>
+                            </div>
+                        `;
+                    });
+                }
+                
                 document.getElementById('fiche-container').innerHTML = `
                     ${pme.photo ? `<img src="${pme.photo}" alt="${pme.nom}">` : ''}
-                    <h1>${pme.nom}</h1>
-                    <p class="slogan ">${pme.description || ''}</p>
-                    <p>📍 ${pme.adresse}</p>
-                    <p>📞 ${pme.telephone}</p>
-                    <p>🕑 ${pme.horaires}</p>
+                    <h1 class="fiche-nom">${pme.nom}</h1>
+                    <p class="fiche-slogan ">${pme.description || ''}</p>
+                    <p class="fiche-info">📍 ${pme.adresse}</p>
+                    <p class="fiche-info">📞 ${pme.telephone}</p>
+                    <p class="fiche-info">🕑 ${pme.horaires}</p>
                     <div class="grille-produits">
                        ${htmlProduits}
                     </div>
                 `;
-                console.log(pme);
-
-                 function ajouterAuPanier(produitID){
-                 //Récuperer le panier existant 
-                 let panier = JSON.parse(localStorage.getItem('panier')) || [];
-
-                //Trouver le produit dans pme.produits
-                const produit = pme.produits.find(function(p){
-                    return p.id === produitID;
-                });
-
-                //Ajout du produit au panier
-                panier.push(produit);
-
-                 //Sauvegarder le panier mis à jour
-                 localStorage.setItem('panier', JSON.stringify(panier));
-                 localStorage.setItem('pme_id', pme.id);
-                 mettreAJourCompteur();
-
-                 console.log('Panier mis à jour:', panier); 
+                
+                function ajouterAuPanier(produitID){
+                   //Récuperer le panier existant 
+                   let panier = JSON.parse(localStorage.getItem('panier')) || [];
+                   //Trouver le produit dans pme.produits
+                   const produit = listeProduits.find(function(p){
+                       return p.id === produitID;
+                   });
+                   //Ajout du produit au panier
+                   panier.push(produit);
+                   //Sauvegarder le panier mis à jour
+                   localStorage.setItem('panier', JSON.stringify(panier));
+                   localStorage.setItem('pme_id', pme.id);
+                   mettreAJourCompteur();
+                   console.log('Panier mis à jour:', panier); 
                 }
 
                 document.querySelectorAll('.btn-ajouter').forEach(function(bouton){

@@ -11,7 +11,7 @@
     <!-- La librairie Font-Awesome -->
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <!-- Le fichier CSS du projet -->
-     <link rel="stylesheet" href="assets/css/style.css">
+     <link rel="stylesheet" href="assets/css/main.css">
      <!-- Le fichier JavaScript de feuillet   -->
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -24,24 +24,30 @@
         *{
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        #carte {
-            height: 100vh;
-            width: 100%;
-            filter: brightness(0.85) contrast(0.9) saturate(0.9);
-        }
-        body {
-            padding: 0;
-            margin: 0;
-        }
-        
-        html, body, #carte {
+        html, body { 
             height: 100%;
             width: 100vw;
         }
+        #carte {
+            height: calc(100vh - 56px - 48px);
+            width: 100%;
+            filter: brightness(0.85) contrast(0.9) saturate(0.9);
+        }
+        
      </style>
 </head>
 <body>
+    <!-- Topbar -->
+     <header class="topbar">
+         <span class="topbar-logo">EzaBiz</span>
+         <a class="compteur-panier" href="commandes/panier.html">
+            🛒 <span id="cart-count">0</span>
+         </a>
+     </header>
+    
+    <!-- Filtres -->
     <div id="filtres">
         <button class="btn-filtre" data-cat="tous">Tous</button>
         <button class="btn-filtre" data-cat="restauration">Restauration</button>
@@ -50,103 +56,153 @@
         <button class="btn-filtre" data-cat="quincaillerie">Quincaillerie</button>
         <button class="btn-filtre" data-cat="transport">Transport</button>
     </div>
-    <div id="carte"></div>
-    <script>
-      const carte = L.map('carte').setView([-11.632240, 27.460640], 13);
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {maxZoom: 19, attribution: '© CartoDB'}).addTo(carte);
+    <!-- Carte -->
+    <div id="carte"></div>
+
+    <script>
+        const carte = L.map('carte').setView([-11.632240, 27.460640], 13);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {maxZoom: 19, attribution: '© CartoDB'}).addTo(carte);
       
-      //Création des icônes pour les catégories
-      
-      const ICONES_CAT = {
-                'restauration' : {fa : 'fa-utensils', classe: 'marqueur-restauration'},
-                'couture': {fa : 'fa-scissors', classe: 'marqueur-couture'},
-                'coiffure' :{fa : 'fa-cut', classe: 'marqueur-coiffure'},
-                'quincaillerie':{fa : 'fa-hammer', classe: 'marqueur-quincaillerie'},
-                'transport':{fa : 'fa-bus', classe: 'marqueur-transport'},
-            };
-      function getIcone(categorie, nom) {
-        const config = ICONES_CAT[categorie] || {fa : 'fa-store', classe: 'marqueur-autre'};
-        const html =
-            '<div class="marqueur ' + config.classe + '">' +
-                '<div class="marqueur-icone">' + 
-                    '<i class="fa-solid ' + config.fa + '"></i>' +
+        //Création des icônes pour les catégories
+        const ICONES_CAT = {
+            'restauration' : {fa : 'fa-utensils', classe: 'marqueur-restauration'},
+            'couture': {fa : 'fa-scissors', classe: 'marqueur-couture'},
+            'coiffure' :{fa : 'fa-cut', classe: 'marqueur-coiffure'},
+            'quincaillerie':{fa : 'fa-hammer', classe: 'marqueur-quincaillerie'},
+            'transport':{fa : 'fa-bus', classe: 'marqueur-transport'},
+        };
+
+        function getIcone(categorie, nom) {
+            const config = ICONES_CAT[categorie] || {fa : 'fa-store', classe: 'marqueur-autre'};
+            const html =
+                '<div class="marqueur ' + config.classe + '">' +
+                    '<div class="marqueur-icone">' + 
+                        '<i class="fa-solid ' + config.fa + '"></i>' +
                     '</div>' +
                     '<span class="marqueur-nom">' + nom + '</span>' +
                 '</div>';
-        return L.divIcon({
-            className: '',
-            html: html,
-            iconSize: [160, 32],
-            iconAnchor: [16, 16], // ancré sur le rond, pas le texte
-            popupAnchor: [80, -16]
-        });
-      }
-       // Actionner le filtrage avec highlight du bouton actif
-      document.querySelectorAll('.btn-filtre').forEach(function(bouton) {
-         bouton.addEventListener('click', function() {
-            document.querySelectorAll('.btn-filtre').forEach(function(b) {
-                b.classList.remove('actif');
+            return L.divIcon({
+                className: '',
+                html: html,
+                iconSize: [160, 32],
+                iconAnchor: [16, 16], // ancré sur le rond, pas le texte
+                popupAnchor: [80, -16]
             });
-            bouton.classList.add('actif');
-            filtrerMarqueurs(bouton.dataset.cat);
-        });
-      });
+        }
 
-      //Création des marqueurs et Groupe de marqueurs
-      let clustersGroup = L.markerClusterGroup();
-      let tousLesMarqueurs = [];
-      let toutesLesPmes = [];
-      
-      fetch('https://ezabiz-production.up.railway.app/api/pme') //Envoie une demande au serveur
-          .then(function(response){
-              return response.json();
-          })
-          .then(function(response){
-              toutesLesPmes = response;
+        // Création des Marqueurs et clusters
+        let clustersGroup = L.markerClusterGroup();
+        let tousLesMarqueurs = [];
+        let toutesLesPmes = [];
 
-              response.forEach(function(pme){
-                  const marqueur = L.marker([pme.latitude, pme.longitude], {icon: getIcone(pme.categorie, pme.nom)})
-                      .bindPopup(
-                          '<b>'+ pme.nom +'</b><br>'+ pme.categorie +
-                          '<br><a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>'
+        // Géolocalisation
+        let marqueurUtilisateur = null;
+
+        function afficherPosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            if (marqueurUtilisateur) {
+                carte.removeLayer(marqueurUtilisateur);
+            }
+
+            marqueurUtilisateur = L.circleMarker([lat, lng], {
+               radius: 10,
+               fillColor: '#0f766e',
+               color: 'white',
+               weight: 2,
+               opacity: 1,
+               fillOpacity: 1
+            }).addTo(carte).bindPopup('📍 Vous êtes ici');
+
+            carte.setView([lat, lng], 14);
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(afficherPosition, function() {
+                console.log('Géolocalisation refusée ou indisponible.');
+            });
+        }
+
+        // Chargement des PME depuis l'API
+        fetch('https://ezabiz-production.up.railway.app/api/pme') //Envoie une demande au serveur
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(pmes) {
+                toutesLesPmes = pmes;
+
+                pmes.forEach(function(pme){
+                    const lienItineraire = 
+                        'https://www.google.com/maps/dir/?api=1&destination=' + 
+                        pme.latitude + ','+ pme.longitude;
+                  
+                    const marqueur = L.marker(
+                        [pme.latitude, pme.longitude],
+                        { icon: getIcone(pme.categorie, pme.nom) }
+                    ).bindPopup(
+                        '<b>' + pme.nom + '</b><br>' + pme.categorie +
+                        '<br><a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>' +
+                        '<br><a href="'+ lienItineraire + '" target="_blank" class="btn-fiche" style="margin-top:6px; background:#0369A1;">🗺️ Itinéraire</a>'
                     );
+                          
                     marqueur.categorie = pme.categorie;
-                tousLesMarqueurs.push(marqueur);
+                    tousLesMarqueurs.push(marqueur);
+                    clustersGroup.addLayer(marqueur);
+                });
+            
+                carte.addLayer(clustersGroup);
+            })
+            .catch(function(erreur) {
+                console.error('Erreur de chargement des PME:', erreur)
+            });
+
+        //Filtrage des marqueurs 
+        function filtrerMarqueurs(categorie) { 
+            // Enlever les marqueurs actuellement affichés
+            tousLesMarqueurs.forEach(function(marqueur){
+                carte.removeLayer(marqueur);
+                clustersGroup.removeLayer(marqueur);
+            });
+            //Restituer les marqueurs dans "Tous"
+            if(categorie === "tous"){
+               tousLesMarqueurs.forEach(function(marqueur){
+                   clustersGroup.addLayer(marqueur);
+               });
+               carte.addLayer(clustersGroup);
+               return;
+            }
+
+            const marqueursFiltres = tousLesMarqueurs.filter(function(marqueur) {
+                return marqueur.categorie.toLowerCase() === categorie;
+            });
+    
+            marqueursFiltres.forEach(function(marqueur) {
                 clustersGroup.addLayer(marqueur);
             });
             carte.addLayer(clustersGroup);
-         })
-        .catch(function(erreur) {
-            console.error('Erreur de chargement des PME:', erreur)
+        }
+
+        // Boutons filtres
+        document.querySelectorAll('.btn-filtre').forEach(function(bouton) {
+            bouton.addEventListener('click', function() {
+                document.querySelectorAll('.btn-filtre').forEach(function(b) {
+                    b.classList.remove('actif');
+                });
+                bouton.classList.add('actif');
+                filtrerMarqueurs(bouton.dataset.cat);
+            });
         });
 
-      //Filtrage des marqueurs 
-      function filtrerMarqueurs(categorie){ 
-      // Enlever les marqueurs actuellement affichés
-      tousLesMarqueurs.forEach(function(marqueur){
-          carte.removeLayer(marqueur);
-          clustersGroup.removeLayer(marqueur);
-      });
-       //Restituer les marqueurs dans "Tous"
-      if(categorie === "tous"){
-        tousLesMarqueurs.forEach(function(marqueur){
-            clustersGroup.addLayer(marqueur);
-        });
-        carte.addLayer(clustersGroup);
-        return;
-      }
-      // On filtre les marqueurs déjà créés, grâce à leur propriété .categorie
-      const marqueursFiltres = tousLesMarqueurs.filter(function(marqueur){
-        return marqueur.categorie.toLowerCase() === categorie;
-      });
-
-      marqueursFiltres.forEach(function(marqueur){
-        clustersGroup.addLayer(marqueur);
-      })
-      carte.addLayer(clustersGroup);
-      }
-       
+        //Compteur pqnier
+        function updateCartCount() {
+            const panier = JSON.parse(localStorage.getItem('panier')) || [];
+            document.getElementById('cart-count').textContent = panier.length;
+        }
+        updateCartCount();
+        window.addEventListener('storage', updateCartCount);
     </script>
 </body>
 </html>
