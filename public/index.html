@@ -20,22 +20,52 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"> 
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+      <!-- Lien Leaflet Routing Machine-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.js"></script>
      <style>
         *{
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        html, body { 
-            height: 100%;
-            width: 100vw;
-        }
+        html, body {  height: 100%; width: 100vw; }
         #carte {
             height: calc(100vh - 56px - 48px);
             width: 100%;
             filter: brightness(0.85) contrast(0.9) saturate(0.9);
         }
-        
+        /* Panneau itinéraire */
+        .leaflet-routing-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+            max-width: 280px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+        }
+        .leaflet-routing-alt {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        #btn-effacer-route {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: 10px 20px;
+            background: #b91c1c;
+            color: white;
+            border: none;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: Arial, sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(185, 28, 28, 0.3);
+        }
      </style>
 </head>
 <body>
@@ -59,6 +89,11 @@
 
     <!-- Carte -->
     <div id="carte"></div>
+    
+    <!-- Bouton pour effacer l'itinéraire-->
+     <button id="btn-effacer-route" onclick="effacerItineraire()">
+        x Effacer l'itinéraire
+     </button>
 
     <script>
         const carte = L.map('carte').setView([-11.632240, 27.460640], 13);
@@ -95,12 +130,13 @@
         // Création des Marqueurs et clusters
         let clustersGroup = L.markerClusterGroup();
         let tousLesMarqueurs = [];
-        let toutesLesPmes = [];
+        let marqueurUtilisateur = null;
+        let positionUtilisateur = null;
+        let routeControl = null;
 
         // Géolocalisation
-        let marqueurUtilisateur = null;
-
         function afficherPosition(position) {
+            positionUtilisateur = position.coords;
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
 
@@ -126,33 +162,70 @@
             });
         }
 
+        // Itinéraire Leaflet Routing Machine
+        function afficherItineraire(latPME, lngPME, nomPME) {
+            if (!positionUtilisateur) {
+                alert('Activez la géolocalisation pour obtenir un itinéraire.');
+                return;
+            }
+
+            // Effacer l'ancien itinéraire
+            if (routeControl) {
+                carte.removeControl(routeControl);
+            }
+
+            routeControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(positionUtilisateur.latitude, positionUtilisateur.longitude),
+                    L.latLng(latPME, lngPME)
+                ],
+                language: 'fr',
+                show: true,
+                routeWhileDragging: false,
+                lineOptions: {
+                    styles: [{ color: '#0f766', weight: 5, opacity: 0.8 }]
+                },
+                createMarker: function() { return null;} // on garde nos propres marqueurs
+            }).addTo(carte);
+
+            // Afficher le bouton effacer
+            document.getElementById('btn-effacer-route').style.display = 'block';
+
+            //Fermer le popup
+            carte.closePopup();
+        }
+
+        function effacerItineraire() {
+            if (routeControl) {
+                carte.removeControl(routeControl);
+                routeControl = null;
+            }
+            document.getElementById('btn-effacer-route').style.display = 'none';
+        }
+
         // Chargement des PME depuis l'API
         fetch('https://ezabiz-production.up.railway.app/api/pme') //Envoie une demande au serveur
             .then(function(response){
                 return response.json();
             })
             .then(function(pmes) {
-                toutesLesPmes = pmes;
-
-                pmes.forEach(function(pme){
-                    const lienItineraire = 
-                        'https://www.google.com/maps/dir/?api=1&destination=' + 
-                        pme.latitude + ','+ pme.longitude;
-                  
+                pmes.forEach(function(pme) {
                     const marqueur = L.marker(
                         [pme.latitude, pme.longitude],
                         { icon: getIcone(pme.categorie, pme.nom) }
                     ).bindPopup(
-                        '<b>' + pme.nom + '</b><br>' + pme.categorie +
+                        '<b>' + pme.nom + '</b>' + 
+                        '<br>< small style="color:#5261f>' + pme.categorie + '</small>' +
                         '<br><a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>' +
-                        '<br><a href="'+ lienItineraire + '" target="_blank" class="btn-fiche" style="margin-top:6px; background:#0369A1;">🗺️ Itinéraire</a>'
+                        '<br><button class="btn-fiche" style="margin-top:6px; background:#0369A1; border:none; cursor:pointer; width:100%;" '+ 
+                        'onclick="afficherItineraire(' + pme.latitude + ',' + pme.longitude + '\'' + pme.nom + '\')">🗺️ Itinéraire</button>'
                     );
-                          
+
                     marqueur.categorie = pme.categorie;
                     tousLesMarqueurs.push(marqueur);
                     clustersGroup.addLayer(marqueur);
                 });
-            
+                          
                 carte.addLayer(clustersGroup);
             })
             .catch(function(erreur) {

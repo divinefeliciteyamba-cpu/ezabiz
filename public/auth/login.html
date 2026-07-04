@@ -5,104 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EzaBiz - Connexion</title>
     <link rel="stylesheet" href="../assets/css/main.css">
-    <style>
-        .auth-page {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20 px;
-            background: #0f1117;
-        }
-        .auth-card {
-           width: 100%;
-           max-width: 420px;
-           background: linear-gradient(145deg, #1a1d2e, #15172a);
-           border: 1px solid #2d2f45;
-           border-radius: 16px;
-           padding: 36px 32px;
-           box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-        .auth-logo {
-            text-align: center;
-            font-size: 26px;
-            font-weight: 700;
-            color: #e4e4f0;
-            margin-bottom: 6px;
-            letter-spacing: -0.5px;
-        }
-        .auth-logo span {
-            color: #a78bfa;
-        }
-        .auth-subtitle  {
-            text-align: center;
-            font-size: 13px;
-            color: #9595b3;
-            margin-bottom: 6px;
-            margin-top: 16px;
-        }
-        .auth-label {
-            display: block;
-            font-size: 13px;
-            color: #9595b3;
-            margin-bottom: 6px;
-            margin-top: 16px;
-        }
-        .auth-input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 11px 14px;
-            background: #0f1117;
-            border: 1px solid #2d2f45;
-            border-radius: 10px;
-            color: #e4e4f0;
-            font-size: 14px;
-        }
-        .auth-input:focus {
-            border-color: #6366f1;
-        }
-        .auth-btn {
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 24px;
-            padding: 13px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(99,102,241,0.4);
-            transition: opacity 0.15s;
-        }
-        .auth-btn:hover {
-            opacity: 0.88;
-        }
-        .auth-message {
-            margin-top: 14px;
-            font-size: 13px;
-            text-align: center;
-            min-height: 20px;
-        }
-        .auth-message.erreur { color: #f87171;}
-        .auth-message.succes{ color: #4ade80;}
-
-        .auth-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 13px;
-            color: #9595b3;
-        }
-        .auth-link a {
-            color:#a78bfa;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .auth-link:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
 <body>
     <div class="auth-page">
@@ -154,21 +56,29 @@
                 if (resultat.token) {
                     // Connexion réussie
                     localStorage.setItem('token', resultat.token);
-                    message.className = 'auth-message succes';
-                    message.textContent = 'Connexion réussie !';
-                    // Retour vers le panier si c'est ce qui a déclenché la redirection
-                    const retour = localStorage.getItem('retour_apres_login');
-                    if (retour) {
-                        localStorage.removeItem('retour_apres_login');
-                        window.location.href = retour;
+
+                    // Décoder le rôle depuis le token
+                    const payload = JSON.parse(atob(resultat.token.split('.') [1]));
+                    const role = payload.role;
+
+                    localStorage.setItem('role', role);
+
+                    if (role === 'pme') {
+                        window.location.href = '../dashboard/login.html';
                     } else {
-                        window.location.href = '../index.html';
+                        const retour = localStorage.getItem('retour_apres_login');
+                        if (retour) {
+                            localStorage.removeItem('retour_apres_login');
+                             window.location.href = retour;
+                        } else {
+                             window.location.href = '../index.html';
+                        }
                     }
                 } else {
-                    message.className = 'auth-message erreur';
-                    message.textContent = resultat.erreur ||  'Email ou mot de passe incorrect.';
+                  message.className = 'auth-message erreur';
+                  message.textContent = resultat.erreur || 'Email ou mot de passe incorrect.';
                 }
-            })
+            })   
             .catch(function(erreur) {
                  message.className = 'auth-message erreur';
                  message.textContent = 'Erreur de connexion. Réessayez.';

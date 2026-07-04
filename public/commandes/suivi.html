@@ -4,200 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi de commande - EzaBiz</title>
+
+    <link rel="stylesheet" href="../assets/css/main.css">
+
     <!-- Bibliothèque jsPDF : génération de fichiers PDF dans le navigateur -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Bibliothèque Socket.io : communication en temps réel avec le serveur -->
     <script src="https://cdn.socket.io/4.8.3/socket.io.min.js" crossorigin="anonymous"></script>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0f1117;
-            color: #e4e4f0;
-            min-height: 100vh;
-            padding-bottom: 40px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            background: linear-gradient(145deg, #1a1d2e, #15172a);
-            border-bottom: 1px solid #2d2f45;
-        }
-
-        .logo { color: #a78bfa; font-weight: bold; font-size: 18px;}
-
-        main {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 24px 16px;
-        }
-
-        .commande-info {
-            background: linear-gradient(145deg, #1a1d2e, #15172a);
-            border: 1px solid #2d2f45;
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 32px;
-        }
-
-        .commande-info h2 {
-           font-size: 13px;
-           color: #9595b3;
-           margin-bottom: 4px;
-           text-transform: uppercase;
-           letter-spacing: 0.5px;
-        }
-
-        .numero {
-            font-size: 24px;
-            font-weight: bold;
-            color: #a78bfa;
-        }
-
-        .pme-nom {
-            font-size: 14px;
-            color: #9595b3;
-            margin-top: 4px;
-        }
-
-        /* Progression horizontale */
-        .progression {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            margin-bottom: 36px;
-            position: relative;
-        }
-
-        .etape {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            position: relative;
-        }
-        
-        /* Ligne entre les cercles */
-        .etape:not(:last-child)::after { 
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            width: 100%;
-            height: 2px;
-            background: #2d2f45;
-            z-index: 0;
-        }
-        
-        .etape.fait:not(:last-child)::after {
-            background: linear-gradient(90deg, #6366f1, #8b5cf6);
-        }
-        .cercle {
-           width: 40px;
-           height: 40px;
-           border-radius: 50%;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           font-size: 16px;
-           font-weight: bold;
-           border: 2px solid #2d2f45;
-           background: #1a1d2e;
-           color: #9595b3;
-           z-index: 1;
-           position: relative;
-        }
-
-        .etape.fait .cercle {
-            background: #14532d;
-            border-color: #16a34a;
-            color: #4ade80;
-        }
-
-        .etape.active .cercle {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            border-color: #6366f1;
-            color: white;
-            box-shadow: 0 0 16px rgba(99, 102, 241, 0.6);
-        }
-
-        .etape-label {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #9595b3;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .etape.active .etape-label{ color: #a78bfa; }
-        .etape.fait .etape-label{ color: #4ade80; }
-         
-        /* Articles */
-        .section-titre {
-            font-size: 12px;
-            color: #9595b3;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-        }
-
-        .articles {
-            background: linear-gradient(145deg, #1a1d2e, #15172a);
-            border: 1px solid #2d2f45;
-            border-radius: 14px;
-            padding: 18px;
-        }
-
-        .article-ligne {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #2d2f45;
-            font-size: 14px;
-            color: #e4e4f0;
-        }
-
-        .article-ligne:last-child { border-bottom: none; }
-
-        .total-suivi {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 14px;
-            font-weight: bold;
-            color: #a78bfa;
-            font-size: 15px;
-            padding-top: 12px;
-            border-top: 1px solid #2d2f45;
-        }
-        #btn-facture {
-            width: 100%;
-            margin-top: 16px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px rgba(99, 102, 241, 0.4);
-        }
-    </style>
+    <!-- api.js : fonctions partagées pour parler au backend -->
+    <script src="../assets/js/api.js"></script>
 </head>
 <body>
-    <header>
-        <span class="logo">EzaBiz</span>
-        <span style="color: #9595b3; font-size: 13px;">Suivi de commande</span>
+    <header class="topbar">
+        <a href="../index.html" class="topbar-logo">EzaBiz</a>
+        <span style="color: white; font-size: 14px;">Suivi de commande</span>
     </header>
+    
+    <div class="suivi-page">
 
-    <main>
         <div class="commande-info">
             <h2>Commande</h2>
-            <div class="numero" id="numero-commande">#---</div>
-            <div class="pme-nom" id="pme-nom">---</div>
+            <div class="numero-commande" id="numero-commande">#---</div>
+            <div class="pme-nom-suivi" id="pme-nom">Chargement...</div>
         </div>
 
         <p class="section-titre">Progression</p>
@@ -218,7 +46,7 @@
         </div>
 
         <p class="section-titre">Articles commandés</p>
-        <div class="articles">
+        <div class="articles-suivi">
             <div id="liste-articles"></div>
             <div class="total-suivi">
                 <span>Total</span>
@@ -229,21 +57,19 @@
         <button id="btn-facture" onclick="genererFacture()">
             📄 Télécharger ma facture
         </button>
-    </main>
-
+    </div>
+   
     <script>
-        // Données fictives temporaires 
-        const commande = {
-            id: 1,
-            numero: '001',
-            pme_nom: 'Restaurant Mama Cécile',
-            statut: 'Confirmée',
-            total: 25000,
-            articles: [
-                { nom: 'Poulet rôti', prix: 15000, quantite: 1},
-                { nom: 'Jus de bissap', prix: 5000, quantite: 2}
-            ]
-        };
+         // Récupération de l'ID de commande depuis l'URL
+
+         const parametres = new URLSearchParams(window.location.search);
+         const commandeId = parametres.get('id');
+
+         let commandeActuelle = null; // Rempli une fois les données chargées
+
+         if (!commandeId) {
+            document.getElementById('pme-nom').textContent = 'Aucune commande spécifiée.';
+         }
 
         function mettreAJourStatut(statut) {
             const etapes = ['En attente', 'Confirmée', 'Livrée'];
@@ -259,8 +85,8 @@
         }
 
         function afficherCommande(commande) {
-            document.getElementById('numero-commande').textContent = '#' + commande.numero;
-            document.getElementById('pme-nom').textContent = commande.pme_nom;
+            document.getElementById('numero-commande').textContent = '#' + commande.id;
+            document.getElementById('pme-nom').textContent = commande.pme_nom || '';
             document.getElementById('total-commande').textContent = commande.total + ' FC';
 
             let html = '';
@@ -268,38 +94,73 @@
                 html += `
                     <div class="article-ligne">
                         <span>${article.nom} x${article.quantite}</span>
-                        <span>${article.prix * article.quantite} FC</span>
+                        <span>${article.prix_unitaire * article.quantite} FC</span>
                     </div>
                 `;
             });
             document.getElementById('liste-articles').innerHTML = html;
             mettreAJourStatut(commande.statut);
         }
+        
+        // Chargement de la vraie commande depuis l'API
+        if (commandeId) {
+            fetch('https://ezabiz-production.up.railway.app/api/commandes' + commandeId)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(commande) {
+                afficherCommande(commande);
+            })
+            .catch(function(erreur) {
+                console.error('Erreur lors du chargement de la commande:', erreur);
+                document.getElementById('pme-nom').textContent = "Impossible de charger la commande.";
+            })
+        }
 
-        afficherCommande(commande);
-
-        // Connexion au serveur Socket.io
+        // Connexion au serveur Socket.io - mises à jour en temps réel 
         const socket = io('https://ezabiz-production.up.railway.app');
 
         // Ecouter les changements de statut
         socket.on('order_status', function(data) {
             console.log('Nouveau statut reçu :', data);
 
+            if (commandeActuelle && data.commande_id === commandeActuelle.id) {
+                mettreAJourStatut(data.statut);
+            }
             // Vérifier que c'est bien notre commande
             if(data.commande_id === commande.id) {
                 mettreAJourStatut(data.statut);
             }
         });
 
-        // Confirmer la connexion
-        socket.on('connect', function() {
-            console.log('Connecté au serveur en temps réel !');
-        });
-
         // Gérer les erreurs
         socket.on('connect_error', function(erreur) {
             console.error('Erreur Socket.io :', erreur);
         });
+
+        // Génération de la facture PDF
+        function genererFacture() {
+            if (!commandeActuelle) return;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.text('Ezabiz - Facture', 14, 20);
+            doc.text('Commande #' + commandeActuelle.id, 14, 30);
+            doc.text(commandeActuelle.pme_nom || '', 14, 38);
+
+            let y = 50;
+            commandeActuelle.articles.forEach(function(article) {
+                doc.text(
+                    article.nom + ' x' + article.quantite + ' - ' (articles.prix_unitaire * article.quantite) + ' FC',
+                    14, y
+                );
+                y += 8;
+            });
+
+            doc.text('Total : ' + commandeActuelle.total + ' FC', 14, y + 10);
+            doc.save('facture-ezabiz-' + commandeActuelleid + '.pdf');
+        }
     </script>
 </body>
 </html>

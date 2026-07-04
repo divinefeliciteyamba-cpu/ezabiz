@@ -3,56 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panier</title>
+    <title>Panier - EzaBiz</title>
     <link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
-    <div id="compteur-panier"></div>
-    <div id="panier-container"></div>
+    <header class="topbar">
+        <a class="topbar-logo" href="../index.html">EzaBiz</a>
+        <span class="compteur-panir"><span id="compteur-panier">0</span></span>
+    </header>
+    <div class="panier-page">
+        <h1 class="panier-titre">Mon panier</h1>
+        <div id="panier-container"></div>
 
-    <form id="formulaire-commande" class="formulaire-adresse">
-        <h2>Adresse de Livraison</h2>
+        <form id="formulaire-commande" class="formulaire-adresse">
+             <h2>Adresse de Livraison</h2>
 
-        <label for="nom-client">Nom complet</label>
-        <input type="text" id="nom-client" required>
+             <label for="nom-client">Nom complet</label>
+             <input type="text" id="nom-client" required>
 
-        <label for="telephone-client">Téléphone</label>
-        <input type="tel" id="telephone-client" required>
+             <label for="telephone-client">Téléphone</label>
+             <input type="tel" id="telephone-client" required>
 
-        <label for="adresse-client">Adresse</label>
-        <textarea id="adresse-client" rows="3" required></textarea>
+             <label for="adresse-client">Adresse</label>
+             <textarea id="adresse-client" rows="3" required></textarea>
 
-        <button type="submit" class="btn-commander">Passer la commande</button>
-    </form>
+             <button type="submit" class="btn-commander">Passer la commande</button>
+             <div class="auth-message" id="message"></div>
+        </form>
+    </div>
+    
     <script>
         let panier = JSON.parse(localStorage.getItem('panier')) || [];
         let pmeId = localStorage.getItem('pme_id');
 
-        //Remplissage du panier et addition d'articles
+        //Affichage du panier
         let htmlPanier = '';
         let total = 0;
-        
-        //Lecture et Affichage de la liste des articles
-        panier.forEach(function(produit){
-            htmlPanier += `
-            <div class="ligne-panier">
-                <span>${produit.nom}</span>
-                <span>${produit.prix} FC</span>
-            </div>
-            `;
-            total += produit.prix;
-        });
 
+        if (panier.length === 0) {
+            htmlPanier = '<p style="color:#52616f; padding: 16px 0;">Votre panier est vide.</p>';
+         } else {
+            //Lecture et Affichage de la liste des articles
+            panier.forEach(function(produit){
+                const sousTotal = produit.prix * (produit.quantite || 1);
+                total += sousTotal;
+                htmlPanier += `
+                   <div class="ligne-panier">
+                       <span>${produit.nom} x${produit.quantite || 1}</span>
+                       <span>${sousTotal} FC</span>
+                   </div>
+                `;
+            });
+          }
+        
         document.getElementById('panier-container').innerHTML = htmlPanier + `
         <div class="total-panier">
-             <strong>Total : ${total} FC</strong>
+             <span>Total</span>
+             <strong>${total} FC</strong>
         </div>
         `;
-        function mettreAJourCompteur(){
+
+        // Compteur
+        function mettreAJourCompteur() {
             document.getElementById('compteur-panier').innerText = '🛒' + panier.length;
         }
         mettreAJourCompteur();
-        
+
+        // Passer la commande
         function passerCommande(){
              //Récuperer le token JWT de l'utilisateur connecté
              const token = localStorage.getItem('token');
@@ -67,6 +84,28 @@
              const nom = document.getElementById('nom-client').value;
              const telephone = document.getElementById('telephone-client').value;
              const adresse = document.getElementById('adresse-client').value;
+             const message = document.getElementById('message');
+
+             if (!nom || !telephone || !adresse) {
+                message.className = 'auth-message erreur';
+                message.textContent = 'Veuillez remplir tous les champs.';
+                return;
+             }
+
+             // Structure articles selon la procédure
+             const articles = panier.map(function(produit) {
+                const quantite = produit.quantite || 1;
+                return {
+                    produit_id: produit.id,
+                    nom: produit.nom,
+                    quantite: quantite,
+                    prix_unitaire: produit.prix,
+                    sous_total: produit.prix * quantite
+                };
+             });
+             
+             message.className = 'auth-message';
+             message.textContent = 'Envoi en cours...';
 
              //Envoie une demande au serveur
              fetch('https://ezabiz-production.up.railway.app/api/commandes', {
@@ -80,19 +119,31 @@
                     articles: panier,
                     client_nom: nom,
                     client_telephone: telephone,
-                    adresse_livraison: adresse
+                    adresse_livraison: adresse,
+                    statut: 'En attente',
+                    total: total,
+                    articles: articles
                 })
              })
              .then(function(response){
                 return response.json();
              })
              .then(function(resultat){
-                localStorage.removeItem('panier');
-                alert('Commande passée avec succès !');
-                window.location.href = '../pme/index.html';
+                if (resultat.success && resultat.commandeId) {
+                    const commandeId = resultat.commandeId;
+                    localStorage.removeItem('panier');
+                    localStorage.removeItem('pme_id');
+                    window.location.href = '../commandes/suivi.html?id=' + commandeId;
+                } else {
+                    message.className = 'auth-message erreur';
+                    message.textContent = resultat.erreur || 'Erreur lors de la commande.';
+                    console.error(resultat);
+                }
              })
              .catch(function(erreur){
-                console.error('Erreur lors de la commande:', erreur);
+                message.className = 'auth-message erreur';
+                message.textContent = 'Erreur de connexion. Réessayez.';
+                console.error(erreur);
              });
         }
 

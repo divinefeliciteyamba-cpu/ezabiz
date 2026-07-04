@@ -5,96 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EzaBiz - Inscription</title>
     <link rel="stylesheet" href="../assets/css/main.css">
-    <style>
-        .auth-page{
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: #0f1117;
-        }
-        .auth-card{
-            width: 100%;
-            max-width: 420px;
-            background: linear-gradient(145deg, #1a1d2e, #15172a);
-            border: 1px solid #2d2f45;
-            border-radius: 16px;
-            padding: 36px 32px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-        .auth-logo{
-            text-align: center;
-            font-size: 26px;
-            font-weight: 700;
-            color: #e4e4f0;
-            margin-bottom: 6px;
-            letter-spacing: -0.5px;
-        }
-        .auth-logo span { color: #a78bfa;}
-        .auth-subtitle {
-            text-align: center;
-            font-size: 26px;
-            color: #9595b3;
-            margin-bottom: 32px;
-        }
-        .auth-label{
-            display: block;
-            font-size: 13px;
-            color: #9595b3;
-            margin-bottom: 6px;
-            margin-top: 16px;
-        }
-        .auth-input{
-            width: 100%;
-            box-sizing: border-box;
-            padding: 11px 14px;
-            background: #0f1117;
-            border: 1px solid #2d2f45;
-            border-radius: 10px;
-            color: #e4e4f0;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .auth-input:focus { border-color: #6266f1;}
-        .auth-btn {
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 24px;
-            padding: 13px;
-            background: linear-gradient(135deg, #6266f1, #8b5cf6);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
-            transition: opacity 0.15s;
-        }
-        .auth-btn:hover { opacity: 0.88;}
-        .auth-message{
-            margin-top: 14px;
-            font-size: 13px;
-            text-align: center;
-            min-height: 20px;
-        }
-        .auth-message.erreur{ color: #f87171; }
-        .auth-message.succes{ color :#4ade80; }
-        .auth-link {
-            text-align: center;
-            margin-top: 20px ;
-            font-size: 13px ;
-            color: #9596b3 ;
-        }
-        .auth-link a {
-            color: #a78bfa;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .auth-link a:hover { text-decoration: underline;}
-    </style>
 </head>
 <body>
     <div class="auth-page">
@@ -111,6 +21,32 @@
              <label class="auth-label" for="mot_de_passe">Mot de passe</label>
              <input class="auth-input" type="password" id="mot_de_passe" placeholder="........">
 
+             <label class="auth-label" for="sexe">Sexe</label>
+             <select class="auth-select" id="sexe">
+                 <option value="homme">Homme</option>
+                 <option value="femme">Femme</option>
+             </select>
+
+             <label class="auth-label" for="date_naissance">Date de naissance</label>
+             <input class="auth-input" type="date" id="date_naissance">
+
+             <label class="auth-label" for="activite">Activité</label>
+             <select class="auth-select" id="activite">
+                  <option value="etudiant">Étudiant</option>
+                  <option value="employe">Employé</option>
+                  <option value="independant">Indépendant</option>
+                  <option value="chomage">Sans emploi</option>
+                  <option value="autre">Autre</option>
+             </select>
+
+             <label class="auth-label" for="etat_civil">État civil</label>
+             <select class="auth-select" id="etat_civil">
+                  <option value="celibataire">Célibataire</option>
+                  <option value="marie">Marié(e)</option>
+                  <option value="divorce">Divorcé(e)</option>
+                  <option value="veuf">Veuf / Veuve</option>
+             </select>
+
              <button class="auth-btn" id="btn-inscription">Créer mon compte</button>
 
              <div class="auth-message" id="message"></div>
@@ -126,9 +62,13 @@
             const nom = document.getElementById('nom').value.trim();
             const email = document.getElementById('email').value.trim();
             const mot_de_passe = document.getElementById('mot_de_passe').value;
+            const sexe = document.getElementById('sexe').value;
+            const date_naissance = document.getElementById('date_naissance').value;
+            const activite = document.getElementById('activite').value;
+            const etat_civil = document.getElementById('etat_civil').value;
             const message = document.getElementById('message');
 
-            if (!nom || !email || !mot_de_passe) {
+            if (!nom || !email || !mot_de_passe || !date_naissance ) {
                 message.className = 'auth-message erreur';
                 message.textContent = 'Veuillez remplir tous les champs.';
                 return;
@@ -146,7 +86,7 @@
             fetch('https://ezabiz-production.up.railway.app/api/auth/register' , {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nom, email, mot_de_passe, role: 'client'})
+                body: JSON.stringify({ nom, email, mot_de_passe, role: 'client', sexe, date_naissance, activite, etat_civil})
             })
             .then(function(response) {
                 return response.json();
