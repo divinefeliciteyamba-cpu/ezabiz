@@ -12,6 +12,8 @@
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <!-- Le fichier CSS du projet -->
      <link rel="stylesheet" href="assets/css/main.css">
+    <!-- Le fichier de gestion de theme clair/sombre -->
+     <script src="assets/js/theme.js" defer></script>
      <!-- Le fichier JavaScript de feuillet   -->
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -203,6 +205,16 @@
             document.getElementById('btn-effacer-route').style.display = 'none';
         }
 
+        // Ecoute tous les clics sur les boutons Itinéraire, même ceux créés dans les popus
+        document.addEventListener('click', function(e) {
+            if(e.target.classList.contains('btn-itineraire')) {
+                const lat = parseFloat(e.target.dataset.lat);
+                const lng = parseFloat(e.target.dataset.lng);
+                const nom = e.target.dataset.nom;
+                afficherItineraire(lat, lng, nom);
+            }
+        });
+
         // Chargement des PME depuis l'API
         fetch('https://ezabiz-production.up.railway.app/api/pme') //Envoie une demande au serveur
             .then(function(response){
@@ -215,10 +227,10 @@
                         { icon: getIcone(pme.categorie, pme.nom) }
                     ).bindPopup(
                         '<b>' + pme.nom + '</b>' + 
-                        '<br>< small style="color:#5261f>' + pme.categorie + '</small>' +
-                        '<br><a href="pme/fiche.html?id='+ pme.id +'" class="btn-fiche">Voir la fiche</a>' +
-                        '<br><button class="btn-fiche" style="margin-top:6px; background:#0369A1; border:none; cursor:pointer; width:100%;" '+ 
-                        'onclick="afficherItineraire(' + pme.latitude + ',' + pme.longitude + '\'' + pme.nom + '\')">🗺️ Itinéraire</button>'
+                        '<br><small style="color:#5261f">' + pme.categorie + '</small>' +
+                        '<br><a href="pme/fiche.html?id=' + pme.id +'" class="btn-fiche" style="display:block; margin-top:6px; width:100%; box-sizing:border-box; text-align:center; color:white; text-decoration:none; font-weight:700;">Voir la fiche</a>' +
+                        '<br><button class="btn-fiche btn-itineraire" style="margin-top:6px; background:#0369A1; border:none; cursor:pointer; width:100%;" '+ 
+                        'data-lat="' + pme.latitude + '" data-lng="' + pme.longitude + '" data-nom="' + pme.nom.replace(/"/g, '&quot;') + '"> 🧭 Itinéraire</button>'
                     );
 
                     marqueur.categorie = pme.categorie;
@@ -276,6 +288,8 @@
         }
         updateCartCount();
         window.addEventListener('storage', updateCartCount);
+
+
     </script>
 </body>
 </html>

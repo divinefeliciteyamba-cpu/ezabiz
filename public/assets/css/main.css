@@ -2,11 +2,58 @@
     box-sizing: border-box;
 }
 
+/* Variables de thème — clair (par défaut) */
+:root {
+    --couleur-primaire: #0f766e;
+    --couleur-primaire-hover: #115e59;
+    --fond-page: #f4f7fb;
+    --fond-carte: white;
+    --texte: #1f2933;
+    --texte-clair: #52616f;
+    --bordure: #e2e8f0;
+    --bordure-input: #cbd5e1;
+    --fond-total-panier: #ecfdf5;
+    --bordure-total-panier: #99f6e4;
+    --fond-etape-fait: #dcfce7;
+    --bordure-etape-fait: #16a34a;
+    --texte-etape-fait: #166534;
+    --bordure-article-ligne: #f1f5f9;
+    --erreur: #991b1b;
+    --succes: #166534;
+    --ombre: rgba(15, 23, 42, 0.06);
+    --ombre-forte: rgba(15, 23, 42, 0.08);
+}
+
+/* ============================================
+   Variables de thème — sombre
+   ============================================ */
+[data-theme="dark"] {
+    --couleur-primaire: #14b8a6;
+    --couleur-primaire-hover: #0d9488;
+    --fond-page: #0f1117;
+    --fond-carte: #1a1d2e;
+    --texte: #e4e4f0;
+    --texte-clair: #9595b3;
+    --bordure: #2d2f45;
+    --bordure-input: #3a3d5c;
+    --fond-total-panier: #134e4a;
+    --bordure-total-panier: #115e59;
+    --fond-etape-fait: #14532d;
+    --bordure-etape-fait: #16a34a;
+    --texte-etape-fait: #4ade80;
+    --bordure-article-ligne: #262a45;
+    --erreur: #f87171;
+    --succes: #4ade80;
+    --ombre: rgba(0, 0, 0, 0.3);
+    --ombre-forte: rgba(0, 0, 0, 0.45);
+}
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    color: #1f2933;
-    background: #f4f7fb;
+    color: var(--texte);
+    background: var(--fond-page);
+    transition: background 0.2s, color 0.2s;
 }
 
 /* Header / Topbar */
@@ -16,7 +63,7 @@ body {
     justify-content: space-between;
     gap: 24px;
     padding: 16px 32px;
-    background: #0f766e;
+    background: var(--couleur-primaire);
     color: white;
 }
 
@@ -43,11 +90,36 @@ body {
     padding: 8px 14px;
     border-radius: 6px;
     background: white;
-    color: #0f766e;
+    color: var(--couleur-primaire);
     font-weight: 700;
     font-size: 14px;
     text-decoration: none;
     cursor: pointer;
+}
+
+/* Bouton bascule clair/sombre */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 3000;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--bordure);
+    background: var(--fond-carte);
+    color: var(--texte);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px var(--ombre-forte);
+    transition: background 0.2s, transform 0.15s;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.05);
 }
 
 /* Carte interactive */
@@ -68,14 +140,18 @@ body {
     left: 0;
     right: 0;
     z-index: 1000;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--bordure);
+}
+
+[data-theme="dark"] #filtres {
+    background: rgba(26, 29, 46, 0.92);
 }
 
 .btn-filtre {
     padding: 6px 16px;
-    border: 2px solid #0f766e;
-    background: white;
-    color: #0f766e;
+    border: 2px solid var(--couleur-primaire);
+    background: var(--fond-carte);
+    color: var(--couleur-primaire);
     border-radius: 20px;
     cursor: pointer;
     font-size: 13px;
@@ -86,7 +162,7 @@ body {
 
 .btn-filtre:hover,
 .btn-filtre.actif {
-    background: #0f766e;
+    background: var(--couleur-primaire);
     color: white;
 }
 
@@ -102,27 +178,27 @@ body {
     height: 220px;
     object-fit: cover;
     border-radius: 10px;
-    background: #e2e8f0;
-    margin-bottom: 24px;    
+    background: var(--bordure);
+    margin-bottom: 24px;
 }
 
 .fiche-nom {
     font-size: 26px;
     font-weight: 700;
-    color: #1f2933;
+    color: var(--texte);
     margin-bottom: 6px;
 }
 
 .fiche-slogan {
     font-size: 15px;
-    color: #52616f;
+    color: var(--texte-clair);
     font-style: italic;
     margin-bottom: 16px;
 }
 
 .fiche-info {
     font-size: 14px;
-    color: #1f2933;
+    color: var(--texte);
     margin-bottom: 8px;
     display: flex;
     align-items: center;
@@ -138,7 +214,7 @@ body {
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
-    background: #0f766e;
+    background: var(--couleur-primaire);
     color: white;
     font-weight: 700;
     font-size: 14px;
@@ -156,12 +232,12 @@ body {
 }
 
 .carte-produit {
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--fond-carte);
+    border: 1px solid var(--bordure);
     border-radius: 10px;
     padding: 16px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 8px var(--ombre);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
 }
 
 .carte-produit:hover {
@@ -172,21 +248,21 @@ body {
 .carte-produit h3 {
     font-size: 15px;
     font-weight: 700;
-    color: #1f2933;
+    color: var(--texte);
     margin-bottom: 6px;
 }
 
 .carte-produit p {
     font-size: 15px;
     font-weight: 700;
-    color: #0f766e;
+    color: var(--couleur-primaire);
     margin-bottom: 6px;
 }
 
 .btn-ajouter {
     width: 100%;
     padding: 9px 0;
-    background: #0f766e;
+    background: var(--couleur-primaire);
     color: white;
     border: none;
     border-radius: 6px;
@@ -198,14 +274,14 @@ body {
 }
 
 .btn-ajouter:hover {
-    background: #115e59;
+    background: var(--couleur-primaire-hover);
 }
 
 /* Panier */
 .panier-page {
     font-size: 22px;
     font-weight: 700;
-    color: #1f2933;
+    color: var(--texte);
     margin-bottom: 20px;
 }
 
@@ -213,12 +289,12 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--fond-carte);
+    border: 1px solid var(--bordure);
     border-radius: 8px;
     padding: 14px 18px;
     margin-bottom: 10px;
-    color: #1f2933;
+    color: var(--texte);
     font-size: 14px;
 }
 
@@ -226,13 +302,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #ecfdf5;
-    border: 1px solid #99f6e4;
+    background: var(--fond-total-panier);
+    border: 1px solid var(--bordure-total-panier);
     border-radius: 8px;
     padding: 16px 18px;
     margin-top: 16px;
     font-weight: 700;
-    color: #0f766e;
+    color: var(--couleur-primaire);
     font-size: 16px;
 }
 
@@ -244,7 +320,7 @@ body {
 .formulaire-adresse h2 {
     font-size: 18px;
     font-weight: 700;
-    color: #1f2933;
+    color: var(--texte);
     margin-bottom: 16px;
 }
 
@@ -252,7 +328,7 @@ body {
     display: block;
     font-size: 13px;
     font-weight: 700;
-    color: #52616f;
+    color: var(--texte-clair);
     margin-bottom: 6px;
     margin-top: 14px;
 }
@@ -262,12 +338,12 @@ body {
 .formulaire-adresse select {
     width: 100%;
     padding: 12px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--bordure-input);
     border-radius: 6px;
     font-family: Arial, sans-serif;
     font-size: 14px;
-    color: #1f2933;
-    background: white;
+    color: var(--texte);
+    background: var(--fond-carte);
     box-sizing: border-box;
 }
 
@@ -275,14 +351,14 @@ body {
 .formulaire-adresse textarea:focus,
 .formulaire-adresse select:focus {
     outline: none;
-    border-color: #0f766e;
+    border-color: var(--couleur-primaire);
 }
 
 .btn-commander {
     width: 100%;
     margin-top: 20px;
     padding: 14px;
-    background: #0f766e;
+    background: var(--couleur-primaire);
     color: white;
     border: none;
     border-radius: 6px;
@@ -294,7 +370,7 @@ body {
 }
 
 .btn-commander:hover {
-    background: #115e59;
+    background: var(--couleur-primaire-hover);
 }
 
 /* Auth ( Login / Register ) */
@@ -303,22 +379,22 @@ body {
     min-height: 100vh;
     place-items: center;
     padding: 24px;
-    background: #f4f7fb;
+    background: var(--fond-page);
 }
 
 .auth-card {
     width: min(440px, 100%);
     padding: 32px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--bordure);
     border-radius: 10px;
-    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
-    background: white;
+    box-shadow: 0 18px 50px var(--ombre-forte);
+    background: var(--fond-carte);
 }
 
 .auth-logo {
     font-size: 22px;
     font-weight: 700;
-    color: #0f766e;
+    color: var(--couleur-primaire);
     text-align: center;
     margin-bottom: 4px;
     text-transform: uppercase;
@@ -328,7 +404,7 @@ body {
 .auth-subtitle {
     text-align: center;
     font-size: 14px;
-    color: #52616f;
+    color: var(--texte-clair);
     margin-bottom: 28px;
 }
 
@@ -336,7 +412,7 @@ body {
     display: block;
     font-size: 13px;
     font-weight: 700;
-    color: #52616f;
+    color: var(--texte-clair);
     margin-bottom: 6px;
     margin-top: 14px;
 }
@@ -346,19 +422,19 @@ body {
     width: 100%;
     box-sizing: border-box;
     padding: 12px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--bordure-input);
     border-radius: 6px;
     font-family: Arial, sans-serif;
     font-size: 14px;
-    color: #1f2933;
-    background: white;
+    color: var(--texte);
+    background: var(--fond-carte);
     outline: none;
     transition: border-color 0.2s;
 }
 
 .auth-input:focus,
 .auth-select:focus {
-    border-color: #0f766e;
+    border-color: var(--couleur-primaire);
 }
 
 .auth-btn {
@@ -366,7 +442,7 @@ body {
     box-sizing: border-box;
     margin-top: 22px;
     padding: 13px;
-    background: #0f766e;
+    background: var(--couleur-primaire);
     color: white;
     border: none;
     border-radius: 6px;
@@ -377,7 +453,7 @@ body {
 }
 
 .auth-btn:hover {
-    background: #115e59;
+    background: var(--couleur-primaire-hover);
 }
 
 .auth-message {
@@ -389,27 +465,27 @@ body {
 }
 
 .auth-message.erreur {
-    color: #991b1b;
+    color: var(--erreur);
 }
 
 .auth-message.succes {
-    color: #166534;
+    color: var(--succes);
 }
 
 .auth-link {
     text-align: center;
     margin-top: 18px;
     font-size: 13px;
-    color: #52616f;
+    color: var(--texte-clair);
 }
 
 .auth-link a {
-    color: #0f766e;
+    color: var(--couleur-primaire);
     text-decoration: none;
     font-weight: 700;
 }
 
-.auth-link  a:hover {
+.auth-link a:hover {
     text-decoration: underline;
 }
 
@@ -421,17 +497,17 @@ body {
 }
 
 .commande-info {
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--fond-carte);
+    border: 1px solid var(--bordure);
     border-radius: 10px;
     padding: 18px;
     margin-bottom: 28px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 2px 8px var(--ombre);
 }
 
 .commande-info h2 {
     font-size: 12px;
-    color: #52616f;
+    color: var(--texte-clair);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 4px;
@@ -440,171 +516,171 @@ body {
 .numero-commande {
     font-size: 24px;
     font-weight: 700;
-    color: #0f766e;
+    color: var(--couleur-primaire);
 }
 
 .pme-nom-suivi {
-  font-size: 14px;
-  color: #52616f;
-  margin-top: 4px;
+    font-size: 14px;
+    color: var(--texte-clair);
+    margin-top: 4px;
 }
 
 /* Progression */
 .progression {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  margin-bottom: 32px;
-  position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 32px;
+    position: relative;
 }
 
 .etape {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
 }
 
 .etape:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  width: 100%;
-  height: 2px;
-  background: #e2e8f0;
-  z-index: 0;
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--bordure);
+    z-index: 0;
 }
 
 .etape.fait:not(:last-child)::after {
-  background: #0f766e;
+    background: var(--couleur-primaire);
 }
 
 .cercle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  font-weight: 700;
-  border: 2px solid #e2e8f0;
-  background: white;
-  color: #52616f;
-  z-index: 1;
-  position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    border: 2px solid var(--bordure);
+    background: var(--fond-carte);
+    color: var(--texte-clair);
+    z-index: 1;
+    position: relative;
 }
 
 .etape.fait .cercle {
-  background: #dcfce7;
-  border-color: #16a34a;
-  color: #166534;
+    background: var(--fond-etape-fait);
+    border-color: var(--bordure-etape-fait);
+    color: var(--texte-etape-fait);
 }
 
 .etape.active .cercle {
-  background: #0f766e;
-  border-color: #0f766e;
-  color: white;
-  box-shadow: 0 0 14px rgba(15, 118, 110, 0.4);
+    background: var(--couleur-primaire);
+    border-color: var(--couleur-primaire);
+    color: white;
+    box-shadow: 0 0 14px rgba(15, 118, 110, 0.4);
 }
 
 .etape-label {
-  margin-top: 10px;
-  font-size: 12px;
-  color: #52616f;
-  text-align: center;
-  font-weight: 700;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--texte-clair);
+    text-align: center;
+    font-weight: 700;
 }
 
-.etape.active .etape-label { color: #0f766e; }
-.etape.fait .etape-label { color: #166534; }
+.etape.active .etape-label { color: var(--couleur-primaire); }
+.etape.fait .etape-label { color: var(--texte-etape-fait); }
 
 .section-titre {
-  font-size: 12px;
-  color: #52616f;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
-  font-weight: 700;
+    font-size: 12px;
+    color: var(--texte-clair);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    font-weight: 700;
 }
 
 .articles-suivi {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 18px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    background: var(--fond-carte);
+    border: 1px solid var(--bordure);
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 2px 8px var(--ombre);
 }
 
 .article-ligne {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #f1f5f9;
-  font-size: 14px;
-  color: #1f2933;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bordure-article-ligne);
+    font-size: 14px;
+    color: var(--texte);
 }
 
 .article-ligne:last-child { border-bottom: none; }
 
 .total-suivi {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 14px;
-  font-weight: 700;
-  color: #0f766e;
-  font-size: 15px;
-  padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 14px;
+    font-weight: 700;
+    color: var(--couleur-primaire);
+    font-size: 15px;
+    padding-top: 12px;
+    border-top: 1px solid var(--bordure);
 }
 
 .btn-facture {
-  width: 100%;
-  margin-top: 16px;
-  background: #0f766e;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  font-family: Arial, sans-serif;
-  cursor: pointer;
-  transition: background 0.15s;
+    width: 100%;
+    margin-top: 16px;
+    background: var(--couleur-primaire);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
 }
 
 .btn-facture:hover {
-  background: #115e59;
+    background: var(--couleur-primaire-hover);
 }
 
-/* ── Marqueurs carte ── */
+/* ── Marqueurs carte (couleurs fixes, indépendantes du thème) ── */
 .marqueur {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .marqueur-icone {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: white;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .marqueur-nom {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1f2933;
-  white-space: nowrap;
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--texte);
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
 }
 
 .marqueur-restauration .marqueur-icone { background: #E8673A; }
@@ -616,52 +692,57 @@ body {
 
 /* Popup */
 .leaflet-popup-content-wrapper {
-  border-radius: 10px;
-  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.12);
-  border: 1px solid #e2e8f0;
-  font-family: Arial, sans-serif;
-  font-size: 13px;
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.12);
+    border: 1px solid var(--bordure);
+    background: var(--fond-carte);
+    color: var(--texte);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+}
+
+.leaflet-popup-tip {
+    background: var(--fond-carte);
 }
 
 .btn-fiche {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 6px 14px;
-  background: #0f766e;
-  color: white;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 700;
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 14px;
+    background: var(--couleur-primaire);
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .btn-fiche:hover {
-  background: #115e59;
+    background: var(--couleur-primaire-hover);
 }
 
 /* Clusters */
 .marker-cluster-small,
 .marker-cluster-medium,
 .marker-cluster-large {
-  background: rgba(15, 118, 110, 0.2) !important;
+    background: rgba(15, 118, 110, 0.2) !important;
 }
 
 .marker-cluster-small div,
 .marker-cluster-medium div,
 .marker-cluster-large div {
-  background: #0f766e !important;
-  color: white !important;
-  font-weight: 700;
-  font-family: Arial, sans-serif;
+    background: var(--couleur-primaire) !important;
+    color: white !important;
+    font-weight: 700;
+    font-family: Arial, sans-serif;
 }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .topbar { padding: 12px 16px; }
-  #filtres { padding: 8px 12px; gap: 6px; }
-  .btn-filtre { padding: 5px 12px; font-size: 12px; }
-  .grille-produits { grid-template-columns: 1fr 1fr; }
-  .fiche-photo { height: 160px; }
-  .panier-page, .fiche-page { margin: 16px auto; }
-}
-
+    .topbar { padding: 12px 16px; }
+    #filtres { padding: 8px 12px; gap: 6px; }
+    .btn-filtre { padding: 5px 12px; font-size: 12px; }
+    .grille-produits { grid-template-columns: 1fr 1fr; }
+    .fiche-photo { height: 160px; }
+    .panier-page, .fiche-page { margin: 16px auto; }
+    .theme-toggle { width: 42px; height: 42px; bottom: 16px; right: 16px; font-size: 18px; }

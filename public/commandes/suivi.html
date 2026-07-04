@@ -6,6 +6,8 @@
     <title>Suivi de commande - EzaBiz</title>
 
     <link rel="stylesheet" href="../assets/css/main.css">
+    <!-- Le fichier de gestion de theme clair/sombre -->
+    <script src="../assets/js/theme.js" defer></script>
 
     <!-- Bibliothèque jsPDF : génération de fichiers PDF dans le navigateur -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -54,7 +56,7 @@
             </div>
         </div>
 
-        <button id="btn-facture" onclick="genererFacture()">
+        <button id="btn-facture" class="btn-facture" onclick="genererFacture()">
             📄 Télécharger ma facture
         </button>
     </div>
@@ -104,11 +106,16 @@
         
         // Chargement de la vraie commande depuis l'API
         if (commandeId) {
-            fetch('https://ezabiz-production.up.railway.app/api/commandes' + commandeId)
+            fetch('https://ezabiz-production.up.railway.app/api/commandes/' + commandeId, {
+                Headers: {
+                    'Authorization': 'Bearer' + localStorage.getItem('token')
+                }
+            })
             .then(function(response) {
                 return response.json();
             })
             .then(function(commande) {
+                commandeActuelle = commande;
                 afficherCommande(commande);
             })
             .catch(function(erreur) {
@@ -125,10 +132,6 @@
             console.log('Nouveau statut reçu :', data);
 
             if (commandeActuelle && data.commande_id === commandeActuelle.id) {
-                mettreAJourStatut(data.statut);
-            }
-            // Vérifier que c'est bien notre commande
-            if(data.commande_id === commande.id) {
                 mettreAJourStatut(data.statut);
             }
         });
@@ -152,14 +155,14 @@
             let y = 50;
             commandeActuelle.articles.forEach(function(article) {
                 doc.text(
-                    article.nom + ' x' + article.quantite + ' - ' (articles.prix_unitaire * article.quantite) + ' FC',
+                    article.nom + ' x' + article.quantite + ' - ' + (articles.prix_unitaire * article.quantite) + ' FC',
                     14, y
                 );
                 y += 8;
             });
 
             doc.text('Total : ' + commandeActuelle.total + ' FC', 14, y + 10);
-            doc.save('facture-ezabiz-' + commandeActuelleid + '.pdf');
+            doc.save('facture-ezabiz-' + commandeActuelle.id + '.pdf');
         }
     </script>
 </body>
