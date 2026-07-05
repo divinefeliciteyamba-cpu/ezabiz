@@ -109,12 +109,16 @@
                 },
                 body: JSON.stringify({
                     pme_id: parseInt(pmeId),
-                    articles: panier,
                     client_nom: nom,
                     client_telephone: telephone,
                     adresse_livraison: adresse,
-                    statut: 'En attente',
-                    total: total,
+                    articles: panier.map(function(produit) {
+                        return {
+                            produit_id: produit.id,
+                            quantite: produit.quantite || 1,
+                            prix_unitaire: produit.prix
+                        };
+                    })
                 })
              })
              .then(function(response){
@@ -148,7 +152,7 @@
         }
 
         // Se déclenche automatiquement quand tu reviens sur cet onglet
-        document.addEventListener('visibilychange', function() {
+        document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
                 rechargerEtAfficherPanier();
             }

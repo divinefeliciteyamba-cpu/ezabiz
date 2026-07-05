@@ -12,7 +12,7 @@
     <!-- Bibliothèque jsPDF : génération de fichiers PDF dans le navigateur -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Bibliothèque Socket.io : communication en temps réel avec le serveur -->
-    <script src="https://cdn.socket.io/4.8.3/socket.io.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <!-- api.js : fonctions partagées pour parler au backend -->
     <script src="../assets/js/api.js"></script>
 </head>
@@ -107,8 +107,8 @@
         // Chargement de la vraie commande depuis l'API
         if (commandeId) {
             fetch('https://ezabiz-production.up.railway.app/api/commandes/' + commandeId, {
-                Headers: {
-                    'Authorization': 'Bearer' + localStorage.getItem('token')
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
             })
             .then(function(response) {
@@ -127,13 +127,14 @@
         // Connexion au serveur Socket.io - mises à jour en temps réel 
         const socket = io('https://ezabiz-production.up.railway.app');
 
-        // Ecouter les changements de statut
-        socket.on('order_status', function(data) {
-            console.log('Nouveau statut reçu :', data);
+        // Récuperer l'ID du client sauvegardé au login
+        const clientId = localStorage.getItem('userId');
 
-            if (commandeActuelle && data.commande_id === commandeActuelle.id) {
-                mettreAJourStatut(data.statut);
-            }
+        // Rejoindre sa salle personnelle pour recevoir ses notifications
+        socket.emit('rejoindre_client', clientId); 
+        
+        socket.on('order_status', function(data) {
+            mettreAJourStatut(data.statut);
         });
 
         // Gérer les erreurs
@@ -147,22 +148,40 @@
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            
+            // En-tête
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(15, 118, 110);
+            doc.text('EzaBiz - Facture', 14, 20);
 
-            doc.text('Ezabiz - Facture', 14, 20);
+            doc.setFontSize(11);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'normal');
             doc.text('Commande #' + commandeActuelle.id, 14, 30);
-            doc.text(commandeActuelle.pme_nom || '', 14, 38);
+            doc.text(commandeActuelle.pme_nom || '', 14, 37);
 
-            let y = 50;
+            // Ligne de séparation
+            doc.setDrawColor(200, 200, 200);
+            doc.line(14, 42, 196, 42);
+
+            // Articles
+            let y = 52;
+            doc.setFontSize(11);
             commandeActuelle.articles.forEach(function(article) {
-                doc.text(
-                    article.nom + ' x' + article.quantite + ' - ' + (articles.prix_unitaire * article.quantite) + ' FC',
-                    14, y
-                );
+                const sousTotal = article.prix_unitaire * article.quantite;
+                doc.text(article.nom + ' x' + article.quantite, 14, y);
+                doc.text(sousTotal + ' FC', 160, y);
                 y += 8;
             });
+            
+            // Total
+           doc.line(14, y, 196, y);
+           y += 8;
+           doc.setFont(undefined, 'bold');
+           doc.text('Total : ' + commandeActuelle.total + ' FC', 14, y);
 
-            doc.text('Total : ' + commandeActuelle.total + ' FC', 14, y + 10);
-            doc.save('facture-ezabiz-' + commandeActuelle.id + '.pdf');
+           doc.save('facture-ezabiz-' + commandeActuelle.id + '.pdf');
         }
     </script>
 </body>
