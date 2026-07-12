@@ -59,6 +59,10 @@
         <button id="btn-facture" class="btn-facture" onclick="genererFacture()">
             📄 Télécharger ma facture
         </button>
+
+         <a href="../index.html" class="btn-secondaire">
+             Retour à l'accueil
+         </a>
     </div>
    
     <script>
@@ -184,9 +188,5 @@
            doc.save('facture-ezabiz-' + commandeActuelle.id + '.pdf');
         }
     </script>
-
-    <a href="../index.html" class="btn-facture" style="display: block; text-align: center; text-decoration: none; margin-top: 12px; background: white; color: #0f766e; border: 1px solid #0f766e;">
-        Retour à l'accueil
-    </a>
 </body>
 </html>

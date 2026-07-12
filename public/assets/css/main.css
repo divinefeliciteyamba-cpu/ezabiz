@@ -651,6 +651,26 @@ body {
     transition: background 0.15s;
 }
 
+/* Bouton Retour à l'accueil */
+.btn-secondaire {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 12px;
+    background: var(--fond-carte);
+    color: var(--couleur-primaire);
+    border: 1px solid var(--couleur-primaire);
+    border-radius: 6px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: Arial, sans-serif;
+    transition: background 0.15s, color 0.15s;
+} 
+.btn-secondaire:hover {
+    background: var(--couleur-primaire);
+    color: white;
+}
 .btn-facture:hover {
     background: var(--couleur-primaire-hover);
 }
