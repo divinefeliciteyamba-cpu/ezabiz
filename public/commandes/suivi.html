@@ -134,7 +134,7 @@
         // Récuperer l'ID du client sauvegardé au login
         const clientId = localStorage.getItem('userId');
 
-        // Rejoindre sa salle personnelle pour recevoir ses notifications
+        // Rejoindre sa salle personnelle "room" pour recevoir ses notifications
         socket.emit('rejoindre_client', clientId); 
         
         socket.on('order_status', function(data) {
