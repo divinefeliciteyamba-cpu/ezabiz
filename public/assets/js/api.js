@@ -30,7 +30,7 @@ const API_URL = 'https://ezabiz-production.up.railway.app';
     return fetch(API_URL + '/api/produits/' + id, {
         method: 'DELETE',
         headers: {
-            'Authorization': 'Bearer' + token
+            'Authorization': 'Bearer ' + token
         }
     })
     .then(function(response) {
@@ -44,7 +44,7 @@ const API_URL = 'https://ezabiz-production.up.railway.app';
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer' + token 
+            'Authorization': 'Bearer ' + token 
         },
         body: JSON.stringify({stock:stock})
     })
@@ -61,7 +61,7 @@ const API_URL = 'https://ezabiz-production.up.railway.app';
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer' + token 
+            'Authorization': 'Bearer ' + token 
         },
         body:JSON.stringify(data)
     })
@@ -74,7 +74,7 @@ const API_URL = 'https://ezabiz-production.up.railway.app';
     const token = localStorage.getItem('token');
     return fetch(API_URL + '/api/commandes?pme_id=' + pmeId, {
          headers: {
-            'Authorization': 'Bearer' + token 
+            'Authorization': 'Bearer ' + token 
         }
     })
     .then(function(response) {
@@ -95,7 +95,7 @@ function changerStatutCommande(id, statut) {
         method: 'PATCH',
         headers: {
            'Content-Type': 'application/json',
-           'Authorization': 'Bearer' + token  
+           'Authorization': 'Bearer ' + token  
         },
         body:JSON.stringify({statut:statut})
     })
@@ -110,7 +110,7 @@ function getClientsByPME(pmeId) {
     const token = localStorage.getItem('token');
     return fetch(API_URL + '/api/clients?pme_id=' + pmeId, {
         headers: {
-            'Authorization': 'Bearer' + token 
+            'Authorization': 'Bearer ' + token 
         }
     })
     .then(function(response) {

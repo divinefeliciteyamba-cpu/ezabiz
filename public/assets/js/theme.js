@@ -2,7 +2,7 @@
 (function() {
     const themeSauvegarde = localStorage.getItem('ezabiz_theme') || 'light';
     if(themeSauvegarde === 'dark') {
-        document.documentElement.setAttribute('data-theme','data');
+        document.documentElement.setAttribute('data-theme','dark');
     }
 })();
 
